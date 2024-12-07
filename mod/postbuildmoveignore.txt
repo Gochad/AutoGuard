@@ -1,0 +1,2 @@
+# Here you can specify each filetype to get ignored by the post build event.
+.pdb\

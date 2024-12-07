@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>gtav-shvdn-template</RootNamespace>
+  </PropertyGroup>
+
+  <Target Name="PostBuild" BeforeTargets="PostBuildEvent">
+    <PropertyGroup>
+      <GTAVDirectory Condition="'$(GTAVDirectory)'==''">C:\Program Files\Epic Games\GTAV\scripts</GTAVDirectory>
+    </PropertyGroup>
+    <Exec Command="&quot;$(ProjectDir)postbuild.bat&quot; &quot;.\bin\Debug\net48\*.*&quot; &quot;$(GTAVDirectory)&quot;" />
+  </Target>
+
+  <ItemGroup>
+    <PackageReference Include="ScriptHookVDotNet3" Version="3.6.0" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+  
+</Project>
