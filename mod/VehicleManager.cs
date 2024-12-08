@@ -12,24 +12,55 @@ namespace template
 
             if (nearestVehicle != null)
             {
-                Function.Call(Hash.TASK_GO_TO_ENTITY, Game.Player.Character.Handle, nearestVehicle.Handle, -1, 5.0f, 4.0f, 0, 0);
+                Function.Call(Hash.SET_PED_PATH_CAN_USE_CLIMBOVERS, Game.Player.Character.Handle, true);
+                Function.Call(Hash.SET_PED_PATH_CAN_USE_LADDERS, Game.Player.Character.Handle, true);
+                Function.Call(Hash.SET_PED_PATH_CAN_DROP_FROM_HEIGHT, Game.Player.Character.Handle, true);
+                Function.Call(Hash.SET_PED_PATH_AVOID_FIRE, Game.Player.Character.Handle, false);
 
-                Script.Wait(5000);
-                
-                Function.Call(Hash.TASK_ENTER_VEHICLE, Game.Player.Character.Handle, nearestVehicle.Handle, -1, -1, 2.0f, 1, 0);
-                
-                Game.Player.Character.Task.EnterVehicle(nearestVehicle, VehicleSeat.Driver);
-                Script.Wait(5000);
-                
-                DriveForward(nearestVehicle);
+                Vector3 driverDoorPosition = GetDriverDoorPosition(nearestVehicle);
+                Function.Call(Hash.TASK_GO_STRAIGHT_TO_COORD, Game.Player.Character.Handle, driverDoorPosition.X, driverDoorPosition.Y, driverDoorPosition.Z, 2.0f, -1, nearestVehicle.Heading, 0);
+
+                Script.Wait(3000);
+
+                if (nearestVehicle.IsSeatFree(VehicleSeat.Driver))
+                {
+                    OpenNearestVehicleDoor(nearestVehicle);
+
+                    Game.Player.Character.Task.EnterVehicle(nearestVehicle, VehicleSeat.Driver);
+
+                    Script.Wait(5000);
+
+                    Function.Call(Hash.SET_PED_PATH_CAN_USE_CLIMBOVERS, Game.Player.Character.Handle, false);
+                    Function.Call(Hash.SET_PED_PATH_CAN_USE_LADDERS, Game.Player.Character.Handle, false);
+                    Function.Call(Hash.SET_PED_PATH_CAN_DROP_FROM_HEIGHT, Game.Player.Character.Handle, false);
+
+                    DriveForward(nearestVehicle);
+                }
             }
+        }
+
+        private static void OpenNearestVehicleDoor(Vehicle vehicle)
+        {
+            if (vehicle != null)
+            {
+                Function.Call(Hash.TASK_OPEN_VEHICLE_DOOR, Game.Player.Character.Handle, vehicle.Handle, 0, false);
+                Script.Wait(2000);
+            }
+        }
+        
+        private static Vector3 GetDriverDoorPosition(Vehicle vehicle)
+        {
+            Vector3 offset = vehicle.RightVector * -1.0f;
+            Vector3 position = vehicle.Position + offset;
+            position.Z += 0.5f;
+            return position;
         }
 
         private static void DriveForward(Vehicle vehicle)
         {
             if (vehicle != null && vehicle.Driver == Game.Player.Character)
             {
-                float speedInMetersPerSecond = 15.0f / 3.6f;
+                float speedInMetersPerSecond = 15.0f;
 
                 Function.Call(Hash.TASK_VEHICLE_DRIVE_WANDER, Game.Player.Character.Handle, vehicle.Handle, speedInMetersPerSecond, 786603);
 
