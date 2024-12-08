@@ -12,7 +12,7 @@ def find_gta_v_installation(start_dir="C:\\"):
             if file.lower() == "playgtav.exe":
                 print(f"GTA V installation found at: {root}")
                 return root
-                
+
     print("GTA V installation not found.")
     return None
 
@@ -63,17 +63,59 @@ def launch_gta_v_with_working_dir(game_path):
         print(f"File not found: {game_path}")
 
 
+def find_profiles_folders():
+    """
+    Recursively searches for all 'Profiles' folders in the Documents directory for GTA V.
+    """
+    profiles = []
+    documents_dir = os.path.join(os.environ["USERPROFILE"], "Documents")
+    
+    for root, dirs, files in os.walk(documents_dir):
+        if "Profiles" in dirs:
+            profiles_path = os.path.join(root, "Profiles")
+            profiles.append(profiles_path)
+            print(f"Found 'Profiles' folder: {profiles_path}")
+    
+    if not profiles:
+        print("No 'Profiles' folder found.")
+    return profiles
+
+
+def copy_saves_to_all_profiles(saves_folder, profiles_folders):
+    """
+    Copies save files to all GTA V profile folders.
+    """
+    if not os.path.exists(saves_folder):
+        print(f"Saves folder not found: {saves_folder}")
+        return
+
+    for profile_folder in profiles_folders:
+        if not os.path.exists(profile_folder):
+            print(f"Profile folder not found: {profile_folder}")
+            continue
+
+        print(f"Copying saves from {saves_folder} to {profile_folder}...")
+        for item in os.listdir(saves_folder):
+            src_path = os.path.join(saves_folder, item)
+            dst_path = os.path.join(profile_folder, item)
+            shutil.copy2(src_path, dst_path)
+        print(f"Saves copied successfully to {profile_folder}.")
+
 if __name__ == "__main__":
     current_dir = os.path.dirname(os.path.abspath(__file__))
     mods_folder = os.path.join(current_dir, "mods")
+    saves_folder = os.path.join(current_dir, "saves")
 
     gta_installation_path = find_gta_v_installation("C:\\")
     if gta_installation_path:
         prepare_mods_and_scripts(gta_installation_path, mods_folder)
 
+        profiles_folders = find_profiles_folders()
+        if profiles_folders:
+            copy_saves_to_all_profiles(saves_folder, profiles_folders)
+
         gta_exe_path = os.path.join(gta_installation_path, "PlayGTAV.exe")
         launch_gta_v_with_working_dir(gta_exe_path)
-
 
 
 
