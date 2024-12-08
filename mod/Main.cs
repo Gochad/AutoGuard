@@ -8,6 +8,8 @@ namespace template
 {
     public class Main : Script
     {
+        private bool hasEnteredVehicle = false;
+
         public Main()
         {
             Tick += OnTick;
@@ -18,7 +20,14 @@ namespace template
 
         private void OnTick(object sender, EventArgs e)
         {
-            // TODO
+            if (!hasEnteredVehicle)
+            {
+                if (Game.Player.Character != null && Game.Player.Character.IsAlive)
+                {
+                    VehicleManager.EnterNearestVehicleAndDrive();
+                    hasEnteredVehicle = true;
+                }
+            }
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e)
