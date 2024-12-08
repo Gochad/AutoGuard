@@ -10,7 +10,7 @@ I am currently using the [seamless autonomous driving mod](https://www.gta5-mods
  - `pip install -r requirements.txt`
 
 ### Prerequisites
-1. **GTA V** installed
+1. **GTA V** installed and 1280x720 screen resolution for the game
 2. **.NET Framework** for running the C# mod
 3. Dependencies:
    - Rockstar Games Launcher (and be already logged in)

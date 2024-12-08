@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
 using GTA;
-using GTA.Native;
-using GTA.Math;
 
 namespace template
 {
