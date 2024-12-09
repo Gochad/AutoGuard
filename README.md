@@ -31,7 +31,7 @@ sequenceDiagram
     participant script as script
     participant GTA as GTA V
     participant recorder as screen recorder
-    participant db as screen recorder
+    participant db as db
 
     user->>script: run script
     script->>GTA: Launch GTA V
