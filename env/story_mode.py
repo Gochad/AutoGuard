@@ -29,7 +29,7 @@ def click_story_mode(window_bounds):
 
     pydirectinput.moveTo(click_x, click_y)
     time.sleep(0.5)
-    pydirectinput.click()
+    pydirectinput.press('enter')
 
 def wait_for_story_mode_screen():
     print("Waiting for GTA V main menu to load...")
