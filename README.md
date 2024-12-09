@@ -22,29 +22,33 @@ run `python env/app.py`
 - `env` - python script to load mods, saves and run game
 - `mod` - C# gtav mod to set target points on map, find the nearest car to drive and start driving to enable `seamless autonomous driving mod`  
 https://www.gta5-mods.com/scripts/seamless-autonomous-driving-mod-no-keys-menus-or-buttons
-- `processing` - python scripts to analyzing data from test videos  
-
+- `processing` - python scripts to analyzing data from test videos
 
 ### Basic flow  
-
 ```mermaid
 sequenceDiagram
-    participant User as User
-    participant App as Application
+    participant user as user
+    participant script as script
     participant GTA as GTA V
-    participant Recorder as Screen Recorder
+    participant recorder as screen recorder
+    participant db as screen recorder
 
-    User->>App: Start application
-    App->>GTA: Launch GTA V
-    App-->>App: Wait for GTA V to load
-    App->>GTA: Select game mode and save
-    App->>GTA: Simulate F9 press
-    App->>Recorder: Start screen recording
-    Recorder-->>App: Send recording
-    App->>App: Process results
-    App->>User: Display results
+    user->>script: run script
+    script->>GTA: Launch GTA V
+    script-->>script: Wait for GTA V to load
+    script->>GTA: Select game mode and save, automatically start car driving
+    script->>recorder: Start screen recording
+    recorder-->>script: Send recording
+    script->>script: Process results
+    script->>user: Display results
+    script->>db: Save results
 ```
 
+### TODO
+1. process somehow video from game and get data from it (eventually C# script to get sensors data)
+2. add db (probably mongodb)
+3. write testcases - because now I am loading only one save and drive to one place 
+4. be prepared to integrate with other autonomous riding envs (other than seamless autonomous driving mod)
 
 ### More informations
 [more docs](https://docs.google.com/document/d/1IKcRw_cjcgbgFVxM3nnlapJooMkW_Ll9Ibul6B54esw)
