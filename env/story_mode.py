@@ -1,60 +1,54 @@
 import time
-import pygetwindow as gw
 import pyautogui
-
+import pygetwindow as gw
+import pydirectinput
 
 def find_gta_window():
-    """
-    Returns fixed bounds for the GTA V window, assuming it is centered at 1280x720 on a 1920x1080 screen.
-    """
-    screen_width, screen_height = pyautogui.size()
+    windows = gw.getWindowsWithTitle("Grand Theft Auto V")
+    if windows:
+        w = windows[0]
+        if w.width > 0 and w.height > 0:
+            return w.left, w.top, w.right, w.bottom
+    return None
 
-    window_width = 1280
-    window_height = 720
+def activate_gta_window():
+    gta_window = gw.getWindowsWithTitle("Grand Theft Auto V")
+    if gta_window:
+        gta_window[0].activate()
+        print("Activated GTA V window.")
+    else:
+        print("GTA V window not found.")
 
-    offset_x = (screen_width - window_width) // 2
-    offset_y = (screen_height - window_height) // 2
-
-    left = offset_x
-    top = offset_y
-    right = left + window_width
-    bottom = top + window_height
-
-    return left, top, right, bottom
-
-
-def click_bottom_right(window_bounds):
-    """
-    Clicks the bottom-right corner of the specified window.
-    """
+def click_story_mode(window_bounds):
     left, top, right, bottom = window_bounds
-    click_x = right - 50
-    click_y = bottom - 100
-    print(f"Clicking at ({click_x}, {click_y})")
-    pyautogui.click(click_x, click_y)
+    
+    click_x = right - 100
+    click_y = bottom - 20
+
+    print(f"Clicking at ({click_x}, {click_y}) for STORY MODE")
+
+    pydirectinput.moveTo(click_x, click_y)
+    time.sleep(0.5)
+    pydirectinput.click()
 
 def wait_for_story_mode_screen():
-    """
-    Waits for the GTA V main menu screen to load and clicks the bottom-right corner.
-    """
     print("Waiting for GTA V main menu to load...")
     while True:
         window_bounds = find_gta_window()
         if window_bounds:
             print(f"GTA V window detected at bounds: {window_bounds}")
-            
+
+            activate_gta_window()
+
             time.sleep(70)
-            
-            click_bottom_right(window_bounds)
+
+            click_story_mode(window_bounds)
             break
         else:
             print("GTA V window not detected. Retrying...")
         time.sleep(1)
 
 def choose_storymode_if_possible():
-    """
-    Checks if the GTA V window is active and clicks the bottom-right corner when detected.
-    """
     while True:
         gta_window = find_gta_window()
         if gta_window:
