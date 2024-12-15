@@ -11,7 +11,6 @@ namespace template
     {
         private bool hasEnteredVehicle = false;
         private Vehicle currentVehicle;
-        private DataCollector dataCollector;
         private LidarCollector lidarCollector;
 
         public Main()
@@ -20,9 +19,6 @@ namespace template
             KeyDown += OnKeyDown;
             
             WaypointManager.SetWaypoint(-1034.6f, -2733.6f);
-            
-            string filePath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "GTA_Data.csv");
-            dataCollector = new DataCollector(filePath);
             
             string lidarFilePath = System.IO.Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), 
@@ -44,7 +40,6 @@ namespace template
 
             if (hasEnteredVehicle && currentVehicle != null)
             {
-                dataCollector.CollectData(currentVehicle);
                 lidarCollector.CollectLidarData(currentVehicle);
             }
         }
@@ -66,7 +61,6 @@ namespace template
                     break;
 
                 case Keys.F10:
-                    dataCollector.Close();
                     lidarCollector.Close();
                     break;
             }

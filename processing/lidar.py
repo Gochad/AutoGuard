@@ -22,7 +22,7 @@ except Exception as e:
     print(f"Error loading data: {e}")
     exit()
 
-data['HitDistance'] = pd.to_numeric(data['HitDistance'], errors='coerce')s
+data['HitDistance'] = pd.to_numeric(data['HitDistance'], errors='coerce')
 
 if not data.empty:
     data['ElapsedTime'] = (data['Time'] - data['Time'].iloc[0]).dt.total_seconds()
