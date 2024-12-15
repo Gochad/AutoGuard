@@ -31,15 +31,21 @@ sequenceDiagram
     participant script as script
     participant GTA as GTA V
     participant recorder as screen recorder
+    participant file as data file
     participant db as db
 
     user->>script: run script
     script->>GTA: Launch GTA V
     script-->>script: Wait for GTA V to load
-    script->>GTA: Select game mode and save, automatically start car driving
+    script->>GTA: Select game mode
+    script->>GTA: Start car driving
     script->>recorder: Start screen recording
-    recorder-->>script: Send recording
-    script->>script: Process results
+    par During car driving
+        GTA-->>script: Provide data
+        script->>file: Append data to file
+        recorder-->>script: Send live recording
+    end
+    script->>script: Process results (data + recording)
     script->>user: Display results
     script->>db: Save results
 ```
