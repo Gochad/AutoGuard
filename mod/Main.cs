@@ -17,7 +17,9 @@ namespace template
         {
             Tick += OnTick;
             KeyDown += OnKeyDown;
-
+            
+            WaypointManager.SetWaypoint(-1034.6f, -2733.6f);
+            
             string filePath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "GTA_Data.csv");
             dataCollector = new DataCollector(filePath);
         }
@@ -28,6 +30,7 @@ namespace template
             {
                 if (Game.Player.Character != null && Game.Player.Character.IsAlive)
                 {
+                    VehicleManager.EnterNearestVehicleAndDrive();
                     currentVehicle = Game.Player.Character.CurrentVehicle;
                     hasEnteredVehicle = true;
                 }
@@ -44,6 +47,16 @@ namespace template
             if (e.KeyCode == Keys.F7)
             {
                 WaypointManager.SetWaypoint(-1034.6f, -2733.6f);
+            }
+            
+            if (e.KeyCode == Keys.F8)
+            {
+                ObstacleManager.AddObstacle();
+            }
+            
+            if (e.KeyCode == Keys.F9)
+            {
+                VehicleManager.EnterNearestVehicleAndDrive();
             }
         }
     }
