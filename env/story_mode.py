@@ -28,7 +28,6 @@ def click_story_mode(window_bounds):
     print(f"Clicking at ({click_x}, {click_y}) for STORY MODE")
 
     pydirectinput.moveTo(click_x, click_y)
-    time.sleep(0.5)
     pydirectinput.press('enter')
 
 def wait_for_story_mode_screen():
@@ -40,7 +39,7 @@ def wait_for_story_mode_screen():
 
             activate_gta_window()
 
-            time.sleep(70)
+            time.sleep(50)
 
             click_story_mode(window_bounds)
             break
