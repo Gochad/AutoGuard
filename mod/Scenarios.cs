@@ -14,8 +14,7 @@ namespace template
                 start: new Vector3(-1034.6f, -2733.6f, 20.0f),
                 heading: 240.0f,
                 waypointPos: new Vector3(-1267.0f, -3386.0f, 13.9f),
-                spawnObstacle: false,
-                obstaclePos: Vector3.Zero
+                spawnObstacle: false
             ));
 
             list.Add(new TestScenario(
@@ -23,8 +22,7 @@ namespace template
                 start: new Vector3(217.0f, -810.0f, 30.0f),
                 heading: 90.0f,
                 waypointPos: new Vector3(375.0f, -750.0f, 29.0f),
-                spawnObstacle: true,
-                obstaclePos: new Vector3(300.0f, -780.0f, 28.5f)
+                spawnObstacle: true
             ));
 
             list.Add(new TestScenario(
@@ -32,8 +30,7 @@ namespace template
                 start: new Vector3(-500.0f, 500.0f, 70.0f),
                 heading: 0.0f,
                 waypointPos: new Vector3(1700.0f, 3800.0f, 34.0f),
-                spawnObstacle: false,
-                obstaclePos: Vector3.Zero
+                spawnObstacle: false
             ));
 
 
