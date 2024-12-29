@@ -13,7 +13,7 @@ namespace template
                 name: "Test1 - easy drive",
                 start: new Vector3(-1034.6f, -2733.6f, 20.0f),
                 heading: 240.0f,
-                waypointPos: new Vector3(-1267.0f, -3386.0f, 13.9f),
+                waypointPos: new Vector3(-1034.6f, -2733.6f, 20.0f),
                 spawnObstacle: false
             ));
 

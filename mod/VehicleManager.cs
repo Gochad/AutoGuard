@@ -60,9 +60,9 @@ namespace template
         {
             if (vehicle != null && vehicle.Driver == Game.Player.Character)
             {
-                float speedInMetersPerSecond = 15.0f;
+                float speedInMetersPerSecond = 20.0f;
 
-                Function.Call(Hash.TASK_VEHICLE_DRIVE_WANDER, Game.Player.Character.Handle, vehicle.Handle, speedInMetersPerSecond, 786603);
+                Function.Call(Hash.TASK_VEHICLE_DRIVE_WANDER, Game.Player.Character.Handle, vehicle.Handle, speedInMetersPerSecond, 262144);
 
                 Script.Wait(5000); 
             }
