@@ -11,7 +11,7 @@ namespace template
     {
         private bool hasEnteredVehicle = false;
         private Vehicle currentVehicle;
-        private LidarCollector lidarCollector;
+        private DrivingMetricsCollector dataCollector;
 
         public Main()
         {
@@ -23,7 +23,7 @@ namespace template
             string lidarFilePath = System.IO.Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), 
                 "GTA_LidarData.csv");
-            lidarCollector = new LidarCollector(lidarFilePath);
+            dataCollector = new DrivingMetricsCollector(lidarFilePath);
         }
 
         private void OnTick(object sender, EventArgs e)
@@ -40,7 +40,7 @@ namespace template
 
             if (hasEnteredVehicle && currentVehicle != null)
             {
-                lidarCollector.CollectLidarData(currentVehicle);
+                dataCollector.CollectMetrics(currentVehicle);
             }
         }
 
@@ -61,7 +61,7 @@ namespace template
                     break;
 
                 case Keys.F10:
-                    lidarCollector.Close();
+                    dataCollector.Close();
                     break;
             }
         }
