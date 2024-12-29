@@ -41,10 +41,7 @@ namespace template
                 return;
             }
 
-            currentScenario.SetWaypoint();
-            currentScenario.SpawnVehicle();
-            currentScenario.EnterVehicle();
-            currentScenario.CollectMetrics(dataCollector);
+            currentScenario.PrepareAndExecuteScenario(dataCollector);
 
             if (currentScenario.IsNearWaypoint())
             {

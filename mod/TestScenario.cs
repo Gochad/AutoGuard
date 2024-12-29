@@ -24,6 +24,14 @@ namespace template
             SpawnObstacle = spawnObstacle;
         }
 
+        public void PrepareAndExecuteScenario(DrivingMetricsCollector dataCollector)
+        {
+            SetWaypoint();
+            SpawnVehicle();
+            EnterVehicle();
+            CollectMetrics(dataCollector);
+        }
+
         public void SetWaypoint()
         {
             WaypointManager.SetWaypoint(WaypointPosition.X, WaypointPosition.Y);
