@@ -1,46 +1,76 @@
 ﻿using System;
 using System.Windows.Forms;
 using GTA;
-using GTA.Native;
 using DataCollectorNamespace;
 using GTA.Math;
+using GTA.Native;
 
 namespace template
 {
     public class Main : Script
     {
-        private bool hasEnteredVehicle = false;
         private Vehicle currentVehicle;
         private DrivingMetricsCollector dataCollector;
+
+        private TestManager testManager;
+
+        private bool hasEnteredVehicleForThisScenario = false;
 
         public Main()
         {
             Tick += OnTick;
             KeyDown += OnKeyDown;
-            
-            WaypointManager.SetWaypoint(-1034.6f, -2733.6f);
-            
+
             string lidarFilePath = System.IO.Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), 
+                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
                 "GTA_LidarData.csv");
+
             dataCollector = new DrivingMetricsCollector(lidarFilePath);
+
+            testManager = new TestManager();
+
+            var allScenarios = Scenarios.GetAllScenarios();
+
+            testManager.AddScenarios(allScenarios);
+
+            testManager.StartNextScenario();
         }
 
         private void OnTick(object sender, EventArgs e)
         {
-            if (!hasEnteredVehicle)
+            var currentScenario = testManager.GetCurrentScenario();
+
+            if (currentScenario == null)
+            {
+                return;
+            }
+
+            if (!hasEnteredVehicleForThisScenario || currentVehicle == null || !currentVehicle.Exists())
             {
                 if (Game.Player.Character != null && Game.Player.Character.IsAlive)
                 {
                     VehicleManager.EnterNearestVehicleAndDrive();
                     currentVehicle = Game.Player.Character.CurrentVehicle;
-                    hasEnteredVehicle = true;
+                    if (currentVehicle != null)
+                    {
+                        hasEnteredVehicleForThisScenario = true;
+                    }
                 }
             }
-
-            if (hasEnteredVehicle && currentVehicle != null)
+            else
             {
                 dataCollector.CollectMetrics(currentVehicle);
+
+                float distanceToWaypoint = Vector3.Distance(
+                    currentVehicle.Position, 
+                    currentScenario.WaypointPosition
+                );
+
+                if (distanceToWaypoint < 30.0f)
+                {
+                    EndCurrentScenario();
+                    testManager.StartNextScenario();
+                }
             }
         }
 
@@ -49,7 +79,11 @@ namespace template
             switch (e.KeyCode)
             {
                 case Keys.F7:
-                    WaypointManager.SetWaypoint(-1034.6f, -2733.6f);
+                    if (testManager.GetCurrentScenario() != null)
+                    {
+                        EndCurrentScenario();
+                        testManager.StartNextScenario();
+                    }
                     break;
 
                 case Keys.F8:
@@ -64,6 +98,12 @@ namespace template
                     dataCollector.Close();
                     break;
             }
+        }
+
+        private void EndCurrentScenario()
+        {
+            hasEnteredVehicleForThisScenario = false;
+            currentVehicle = null;
         }
     }
 }
