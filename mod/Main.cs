@@ -13,9 +13,7 @@ namespace template
         private DrivingMetricsCollector dataCollector;
 
         private TestManager testManager;
-
-        private bool hasEnteredVehicleForThisScenario = false;
-        private bool isVehicleSpawned = false;
+        
         public Main()
         {
             Tick += OnTick;
@@ -44,58 +42,16 @@ namespace template
             {
                 return;
             }
-            
-            WaypointManager.SetWaypoint(currentScenario.WaypointPosition.X, currentScenario.WaypointPosition.Y);
 
-            if (!isVehicleSpawned)
+            currentScenario.SetWaypoint();
+            currentScenario.SpawnVehicle();
+            currentScenario.EnterVehicle();
+            currentScenario.CollectMetrics(dataCollector);
+
+            if (currentScenario.IsNearWaypoint())
             {
-                Vector3 vehicleSpawnOffset = new Vector3(5f, 0f, 0f);
-                Vector3 vehicleSpawnPosition = currentScenario.StartPosition + vehicleSpawnOffset;
-                Model vehicleModel = new Model(VehicleHash.SultanRS);
-
-                if (!vehicleModel.IsLoaded)
-                {
-                    vehicleModel.Request();
-                }
-
-                if (vehicleModel.IsLoaded)
-                {
-                    currentVehicle = World.CreateVehicle(vehicleModel, vehicleSpawnPosition);
-                    if (currentVehicle != null && currentVehicle.Exists())
-                    {
-                        currentVehicle.Heading = currentScenario.StartHeading;
-                        currentVehicle.IsPersistent = true;
-                        isVehicleSpawned = true;
-                    }
-                }
-            }
-            
-            if (!hasEnteredVehicleForThisScenario || currentVehicle == null || !currentVehicle.Exists())
-            {
-                if (Game.Player.Character != null && Game.Player.Character.IsAlive)
-                {
-                    VehicleManager.EnterNearestVehicleAndDrive();
-                    currentVehicle = Game.Player.Character.CurrentVehicle;
-                    if (currentVehicle != null)
-                    {
-                        hasEnteredVehicleForThisScenario = true;
-                    }
-                }
-            }
-            else
-            {
-                dataCollector.CollectMetrics(currentVehicle);
-
-                float distanceToWaypoint = Vector3.Distance(
-                    currentVehicle.Position,
-                    currentScenario.WaypointPosition
-                );
-
-                if (distanceToWaypoint < 30.0f)
-                {
-                    EndCurrentScenario();
-                    testManager.StartNextScenario();
-                }
+                currentScenario.EndScenario();
+                testManager.StartNextScenario();
             }
         }
 
@@ -132,9 +88,6 @@ namespace template
                 currentVehicle.Delete();
                 currentVehicle = null;
             }
-
-            hasEnteredVehicleForThisScenario = false;
-            isVehicleSpawned = false;
         }
     }
 }
