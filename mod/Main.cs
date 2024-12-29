@@ -2,8 +2,6 @@
 using System.Windows.Forms;
 using GTA;
 using DataCollectorNamespace;
-using GTA.Math;
-using GTA.Native;
 
 namespace template
 {

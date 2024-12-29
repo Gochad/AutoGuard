@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using GTA;
-using GTA.Math;
 
 namespace template
 {
