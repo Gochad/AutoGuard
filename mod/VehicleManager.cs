@@ -2,7 +2,7 @@ using GTA;
 using GTA.Math;
 using GTA.Native;
 
-namespace template
+namespace drivingMod
 {
     public static class VehicleManager
     {

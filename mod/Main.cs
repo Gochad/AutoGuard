@@ -3,7 +3,7 @@ using System.Windows.Forms;
 using GTA;
 using DataCollectorNamespace;
 
-namespace template
+namespace drivingMod
 {
     public class Main : Script
     {
@@ -17,11 +17,7 @@ namespace template
             Tick += OnTick;
             KeyDown += OnKeyDown;
 
-            string lidarFilePath = System.IO.Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                "GTA_LidarData.csv");
-
-            dataCollector = new DrivingMetricsCollector(lidarFilePath);
+            dataCollector = new DrivingMetricsCollector();
 
             testManager = new TestManager();
 
@@ -30,6 +26,8 @@ namespace template
             testManager.AddScenarios(allScenarios);
 
             testManager.StartNextScenario();
+
+            UpdateDataCollectorFile();
         }
 
         private void OnTick(object sender, EventArgs e)
@@ -47,6 +45,7 @@ namespace template
             {
                 currentScenario.EndScenario();
                 testManager.StartNextScenario();
+                UpdateDataCollectorFile();
             }
         }
 
@@ -59,6 +58,7 @@ namespace template
                     {
                         EndCurrentScenario();
                         testManager.StartNextScenario();
+                        UpdateDataCollectorFile();
                     }
                     break;
 
@@ -73,6 +73,21 @@ namespace template
                 case Keys.F10:
                     dataCollector.Close();
                     break;
+            }
+        }
+
+        private void UpdateDataCollectorFile()
+        {
+            var currentScenario = testManager.GetCurrentScenario();
+
+            if (currentScenario != null)
+            {
+                string scenarioName = currentScenario.Name;
+                string scenarioFilePath = System.IO.Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                    $"GTA_LidarData_{scenarioName}.csv");
+
+                dataCollector.SetOutputFile(scenarioFilePath);
             }
         }
 

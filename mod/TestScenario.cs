@@ -2,7 +2,7 @@ using GTA;
 using GTA.Math;
 using DataCollectorNamespace;
 
-namespace template
+namespace drivingMod
 {
     public class TestScenario
     {

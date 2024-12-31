@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using GTA;
 
-namespace template
+namespace drivingMod
 {
     public class TestManager
     {

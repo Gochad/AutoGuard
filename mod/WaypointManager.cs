@@ -1,6 +1,6 @@
 using GTA.Native;
 
-namespace template
+namespace drivingMod
 {
     public static class WaypointManager
     {
