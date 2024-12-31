@@ -1,58 +1,54 @@
+from fpdf import FPDF
 import pandas as pd
 import matplotlib.pyplot as plt
-import numpy as np
 
-filename = 'NewData.csv'
+filename = 'GTA_LidarData_Test7_mountain_road.csv'
 columns = [
     'Time', 'PositionX', 'PositionY', 'PositionZ', 'Speed', 'SpeedDeviation',
     'Jerk', 'SteeringAngle', 'LaneOffset', 'LaneDepartures', 'TrafficViolations', 'CollisionDetected'
 ]
 
-try:
-    data = pd.read_csv(
-        filename,
-        names=columns,
-        skiprows=1
-    )
-
-    data['Time'] = pd.to_datetime(data['Time'], format='%d.%m.%Y %H:%M:%S', errors='coerce')
-    
-    print("Data loaded successfully.")
-except Exception as e:
-    print(f"Error loading data: {e}")
-    exit()
-
-if data.empty:
-    raise ValueError("No valid data to process.")
+data = pd.read_csv(filename, names=columns, skiprows=1)
+data['Time'] = pd.to_datetime(data['Time'], format='%d.%m.%Y %H:%M:%S', errors='coerce')
 
 data['ElapsedTime'] = (data['Time'] - data['Time'].iloc[0]).dt.total_seconds()
+data['LaneDepartures'] = pd.to_numeric(data['LaneDepartures'], errors='coerce')
+
+data['LaneDepartures'] = data['LaneDepartures'].fillna(0).astype(int)
+data['TrafficViolations'] = pd.to_numeric(data['TrafficViolations'], errors='coerce')
+data['TrafficViolations'] = data['TrafficViolations'].fillna(0).astype(int)
+data['LaneOffset'] = pd.to_numeric(data['LaneOffset'], errors='coerce')
 
 speed_stats = data['Speed'].describe()
 jerk_stats = data['Jerk'].describe()
 steering_stats = data['SteeringAngle'].describe()
 lane_offset_stats = data['LaneOffset'].describe()
 
-print("\n--- Speed Statistics ---")
-print(speed_stats)
-
-print("\n--- Jerk Statistics ---")
-print(jerk_stats)
-
-print("\n--- Steering Angle Statistics ---")
-print(steering_stats)
-
-print("\n--- Lane Offset Statistics ---")
-print(lane_offset_stats)
-
 lane_departure_count = data['LaneDepartures'].sum()
 traffic_violation_count = data['TrafficViolations'].sum()
-collision_count = data['CollisionDetected'].sum()
+collision_count = 0
 
-print("\n--- Event Counts ---")
-print(f"Lane Departures: {lane_departure_count}")
-print(f"Traffic Violations: {traffic_violation_count}")
-print(f"Collisions: {collision_count}")
+score = 100
+collision_penalty = collision_count * 10
+lane_departure_penalty = lane_departure_count * 5
+violation_penalty = traffic_violation_count * 3
+max_lane_offset = data['LaneOffset'].max()
 
+score -= (collision_penalty + lane_departure_penalty + violation_penalty)
+if max_lane_offset > 3.0:
+    score -= 10
+score = max(0, score)
+
+corr_cols = ['Speed', 'Jerk', 'SteeringAngle', 'LaneOffset']
+for col in corr_cols:
+    if data[col].dtype == 'bool':
+        data[col] = data[col].astype(int)
+    else:
+        data[col] = pd.to_numeric(data[col], errors='coerce').fillna(0)
+
+correlation_matrix = data[corr_cols].corr()
+
+plots = []
 plt.figure(figsize=(12, 6))
 plt.plot(data['ElapsedTime'], data['Speed'], label='Speed (m/s)', color='blue')
 plt.title('Speed over Time')
@@ -60,16 +56,20 @@ plt.xlabel('Time (s)')
 plt.ylabel('Speed (m/s)')
 plt.legend()
 plt.grid(True)
-plt.show()
+plt.savefig('speed_over_time.png')
+plots.append('speed_over_time.png')
+plt.close()
 
 plt.figure(figsize=(12, 6))
-plt.plot(data['ElapsedTime'], data['SteeringAngle'], label='Steering Angle (°)', color='green')
+plt.plot(data['ElapsedTime'], data['SteeringAngle'], label='Steering Angle (\u00b0)', color='green')
 plt.title('Steering Angle over Time')
 plt.xlabel('Time (s)')
-plt.ylabel('Steering Angle (°)')
+plt.ylabel('Steering Angle (\u00b0)')
 plt.legend()
 plt.grid(True)
-plt.show()
+plt.savefig('steering_angle_over_time.png')
+plots.append('steering_angle_over_time.png')
+plt.close()
 
 plt.figure(figsize=(12, 6))
 plt.plot(data['ElapsedTime'], data['LaneOffset'], label='Lane Offset (m)', color='orange')
@@ -78,13 +78,9 @@ plt.xlabel('Time (s)')
 plt.ylabel('Lane Offset (m)')
 plt.legend()
 plt.grid(True)
-plt.show()
-
-min_lane_offset = data['LaneOffset'].min()
-max_lane_offset = data['LaneOffset'].max()
-
-print(f"\nMin Lane Offset: {min_lane_offset}")
-print(f"Max Lane Offset: {max_lane_offset}")
+plt.savefig('lane_offset_over_time.png')
+plots.append('lane_offset_over_time.png')
+plt.close()
 
 plt.figure(figsize=(12, 6))
 plt.plot(data['PositionX'], data['PositionY'], label='Trajectory', color='purple')
@@ -93,34 +89,52 @@ plt.xlabel('PositionX')
 plt.ylabel('PositionY')
 plt.legend()
 plt.grid(True)
-plt.show()
+plt.savefig('vehicle_trajectory.png')
+plots.append('vehicle_trajectory.png')
+plt.close()
 
-score = 100
+pdf = FPDF()
+pdf.set_auto_page_break(auto=True, margin=15)
+pdf.add_page()
+pdf.set_font('Arial', 'B', 16)
+pdf.cell(0, 10, 'Driving Quality Report', ln=True, align='C')
 
-collision_penalty = collision_count * 10
-score -= collision_penalty
+pdf.set_font('Arial', 'B', 12)
+pdf.cell(0, 10, 'Statistics:', ln=True)
+pdf.set_font('Arial', '', 10)
+pdf.multi_cell(0, 10, f"""
+--- Speed Statistics ---
+{speed_stats.to_string()}
 
-lane_departure_penalty = lane_departure_count * 5
-score -= lane_departure_penalty
+--- Jerk Statistics ---
+{jerk_stats.to_string()}
 
-violation_penalty = traffic_violation_count * 3
-score -= violation_penalty
+--- Steering Angle Statistics ---
+{steering_stats.to_string()}
 
-if max_lane_offset > 3.0:
-    score -= 10
+--- Lane Offset Statistics ---
+{lane_offset_stats.to_string()}
+""")
 
-score = max(0, score)
+pdf.set_font('Arial', 'B', 12)
+pdf.cell(0, 10, 'Event Counts:', ln=True)
+pdf.set_font('Arial', '', 10)
+pdf.multi_cell(0, 10, f"""
+Lane Departures: {lane_departure_count}
+Traffic Violations: {traffic_violation_count}
+Collisions: {collision_count}
 
-print("\n--- Driving Quality Evaluation ---")
-print(f"Lane Departures: {lane_departure_count}")
-print(f"Traffic Violations: {traffic_violation_count}")
-print(f"Collisions: {collision_count}")
-print(f"Driving Score (0-100): {score}")
+Driving Score (0-100): {score}
+""")
 
-corr_cols = ['Speed', 'Jerk', 'SteeringAngle', 'LaneOffset']
-correlation_matrix = data[corr_cols].corr()
+pdf.set_font('Arial', 'B', 12)
+pdf.cell(0, 10, 'Correlation Matrix:', ln=True)
+pdf.set_font('Arial', '', 10)
+pdf.multi_cell(0, 10, correlation_matrix.to_string())
 
-print("\n--- Correlation Matrix ---")
-print(correlation_matrix)
+for plot in plots:
+    pdf.add_page()
+    pdf.image(plot, x=10, y=30, w=190)
 
-print("\nAnalysis complete.")
+output_path = 'report.pdf'
+pdf.output(output_path)
