@@ -51,12 +51,11 @@ sequenceDiagram
 ```
 
 ### TODO
-1. process somehow video from game and get data from it (eventually C# script to get sensors data)
-2. add db (probably mongodb)
-3. be prepared to integrate with other autonomous riding envs (other than seamless autonomous driving mod)
+1. add db (probably mongodb)
+2. be prepared to integrate with other autonomous riding envs (other than seamless autonomous driving mod)
 
-#### shortterm
-- save data from testcases to separate files
+### shortterm
+add clear metrics if ride was good or not
 
 ### More informations
 [more docs](https://docs.google.com/document/d/1IKcRw_cjcgbgFVxM3nnlapJooMkW_Ll9Ibul6B54esw)
