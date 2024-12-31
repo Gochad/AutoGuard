@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Windows.Forms;
 using GTA;
 using DataCollectorNamespace;
@@ -63,7 +64,8 @@ namespace drivingMod
                     break;
 
                 case Keys.F8:
-                    ObstacleManager.AddObstacle();
+                    LogPlayerPosition();
+                    //ObstacleManager.AddObstacle();
                     break;
 
                 case Keys.F9:
@@ -73,6 +75,23 @@ namespace drivingMod
                 case Keys.F10:
                     dataCollector.Close();
                     break;
+            }
+        }
+        
+        private void LogPlayerPosition()
+        {
+            var player = Game.Player.Character;
+
+            if (player != null && player.Exists())
+            {
+                var position = player.Position;
+                string positionLog = $"Player Position: X={position.X}, Y={position.Y}, Z={position.Z}";
+
+                string logFilePath = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                    "PlayerPositionLog.txt");
+
+                File.AppendAllText(logFilePath, positionLog + Environment.NewLine);
             }
         }
 
