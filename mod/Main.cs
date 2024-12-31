@@ -1,46 +1,52 @@
 ﻿using System;
+using System.IO;
 using System.Windows.Forms;
 using GTA;
-using GTA.Native;
 using DataCollectorNamespace;
-using GTA.Math;
 
-namespace template
+namespace drivingMod
 {
     public class Main : Script
     {
-        private bool hasEnteredVehicle = false;
         private Vehicle currentVehicle;
         private DrivingMetricsCollector dataCollector;
 
+        private TestManager testManager;
+        
         public Main()
         {
             Tick += OnTick;
             KeyDown += OnKeyDown;
-            
-            WaypointManager.SetWaypoint(-1034.6f, -2733.6f);
-            
-            string lidarFilePath = System.IO.Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), 
-                "GTA_LidarData.csv");
-            dataCollector = new DrivingMetricsCollector(lidarFilePath);
+
+            dataCollector = new DrivingMetricsCollector();
+
+            testManager = new TestManager();
+
+            var allScenarios = Scenarios.GetAllScenarios();
+
+            testManager.AddScenarios(allScenarios);
+
+            testManager.StartNextScenario();
+
+            UpdateDataCollectorFile();
         }
 
         private void OnTick(object sender, EventArgs e)
         {
-            if (!hasEnteredVehicle)
+            var currentScenario = testManager.GetCurrentScenario();
+
+            if (currentScenario == null)
             {
-                if (Game.Player.Character != null && Game.Player.Character.IsAlive)
-                {
-                    VehicleManager.EnterNearestVehicleAndDrive();
-                    currentVehicle = Game.Player.Character.CurrentVehicle;
-                    hasEnteredVehicle = true;
-                }
+                return;
             }
 
-            if (hasEnteredVehicle && currentVehicle != null)
+            currentScenario.PrepareAndExecuteScenario(dataCollector);
+
+            if (currentScenario.IsNearWaypoint())
             {
-                dataCollector.CollectMetrics(currentVehicle);
+                currentScenario.EndScenario();
+                testManager.StartNextScenario();
+                UpdateDataCollectorFile();
             }
         }
 
@@ -49,11 +55,17 @@ namespace template
             switch (e.KeyCode)
             {
                 case Keys.F7:
-                    WaypointManager.SetWaypoint(-1034.6f, -2733.6f);
+                    if (testManager.GetCurrentScenario() != null)
+                    {
+                        EndCurrentScenario();
+                        testManager.StartNextScenario();
+                        UpdateDataCollectorFile();
+                    }
                     break;
 
                 case Keys.F8:
-                    ObstacleManager.AddObstacle();
+                    LogPlayerPosition();
+                    //ObstacleManager.AddObstacle();
                     break;
 
                 case Keys.F9:
@@ -63,6 +75,47 @@ namespace template
                 case Keys.F10:
                     dataCollector.Close();
                     break;
+            }
+        }
+        
+        private void LogPlayerPosition()
+        {
+            var player = Game.Player.Character;
+
+            if (player != null && player.Exists())
+            {
+                var position = player.Position;
+                string positionLog = $"Player Position: X={position.X}, Y={position.Y}, Z={position.Z}";
+
+                string logFilePath = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                    "PlayerPositionLog.txt");
+
+                File.AppendAllText(logFilePath, positionLog + Environment.NewLine);
+            }
+        }
+
+        private void UpdateDataCollectorFile()
+        {
+            var currentScenario = testManager.GetCurrentScenario();
+
+            if (currentScenario != null)
+            {
+                string scenarioName = currentScenario.Name;
+                string scenarioFilePath = System.IO.Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                    $"GTA_LidarData_{scenarioName}.csv");
+
+                dataCollector.SetOutputFile(scenarioFilePath);
+            }
+        }
+
+        private void EndCurrentScenario()
+        {
+            if (currentVehicle != null && currentVehicle.Exists())
+            {
+                currentVehicle.Delete();
+                currentVehicle = null;
             }
         }
     }

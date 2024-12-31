@@ -14,8 +14,9 @@ namespace DataCollectorNamespace
         private DateTime lastUpdateTime;
         private int laneDepartureCount = 0;
 
-        public DrivingMetricsCollector(string filePath)
+        public void SetOutputFile(string filePath)
         {
+            Close();
             dataWriter = new StreamWriter(filePath, false);
             dataWriter.WriteLine("Time,PositionX,PositionY,PositionZ,Speed,SpeedDeviation,Jerk,SteeringAngle,LaneOffset,LaneDepartures,TrafficViolations,CollisionDetected");
             lastPosition = Vector3.Zero;
@@ -68,7 +69,6 @@ namespace DataCollectorNamespace
             }
         }
 
-       
         private float CalculateLaneOffset(Vehicle vehicle)
         {
             Vector3 vehiclePosition = vehicle.Position;

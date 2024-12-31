@@ -1,7 +1,7 @@
 using GTA;
 using GTA.Math;
 
-namespace template
+namespace drivingMod
 {
     public static class ObstacleManager
     {
