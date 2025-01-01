@@ -104,7 +104,7 @@ namespace drivingMod
                 string scenarioName = currentScenario.Name;
                 string scenarioFilePath = System.IO.Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                    $"GTA_LidarData_{scenarioName}.csv");
+                    $"GTA_Data_{scenarioName}.csv");
 
                 dataCollector.SetOutputFile(scenarioFilePath);
             }

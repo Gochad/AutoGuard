@@ -1,5 +1,6 @@
 .idea/
 /env/__pycache__
+/processing/__pycache__
 /mod/.idea/
 /mod/bin/
 /mod/obj/

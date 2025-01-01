@@ -13,12 +13,13 @@ namespace DataCollectorNamespace
         private float lastSpeed;
         private DateTime lastUpdateTime;
         private int laneDepartureCount = 0;
+        private DateTime lastLoggedTime = DateTime.MinValue;
 
         public void SetOutputFile(string filePath)
         {
             Close();
             dataWriter = new StreamWriter(filePath, false);
-            dataWriter.WriteLine("Time,PositionX,PositionY,PositionZ,Speed,SpeedDeviation,Jerk,SteeringAngle,LaneOffset,LaneDepartures,TrafficViolations,CollisionDetected");
+            dataWriter.WriteLine("Time;PositionX;PositionY;PositionZ;Speed;SpeedDeviation;Jerk;SteeringAngle;LaneOffset;LaneDepartures;TrafficViolations;CollisionDetected");
             lastPosition = Vector3.Zero;
             lastSpeed = 0f;
             lastUpdateTime = DateTime.Now;
@@ -29,6 +30,13 @@ namespace DataCollectorNamespace
             if (vehicle != null && vehicle.Exists())
             {
                 DateTime now = DateTime.Now;
+                if ((now - lastLoggedTime).TotalSeconds < 1)
+                {
+                    return;
+                }
+
+                lastLoggedTime = now;
+
                 Vector3 currentPosition = vehicle.Position;
                 float currentSpeed = vehicle.Speed * 3.6f;
                 float speedLimit;
@@ -60,7 +68,7 @@ namespace DataCollectorNamespace
 
                 bool collisionDetected = CheckCollisions(vehicle);
 
-                string line = $"{now},{currentPosition.X},{currentPosition.Y},{currentPosition.Z},{currentSpeed},{speedDeviation},{jerk},{steeringAngle},{laneOffset},{laneDepartureCount},{trafficViolations},{collisionDetected}";
+                string line = $"{now};{currentPosition.X};{currentPosition.Y};{currentPosition.Z};{currentSpeed};{speedDeviation};{jerk};{steeringAngle};{laneOffset};{laneDepartureCount};{trafficViolations};{collisionDetected}";
                 dataWriter.WriteLine(line);
 
                 lastPosition = currentPosition;
