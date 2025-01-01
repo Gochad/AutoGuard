@@ -13,6 +13,7 @@ namespace DataCollectorNamespace
         private float lastSpeed;
         private DateTime lastUpdateTime;
         private int laneDepartureCount = 0;
+        private DateTime lastLoggedTime = DateTime.MinValue;
 
         public void SetOutputFile(string filePath)
         {
@@ -29,6 +30,13 @@ namespace DataCollectorNamespace
             if (vehicle != null && vehicle.Exists())
             {
                 DateTime now = DateTime.Now;
+                if ((now - lastLoggedTime).TotalSeconds < 1)
+                {
+                    return;
+                }
+
+                lastLoggedTime = now;
+
                 Vector3 currentPosition = vehicle.Position;
                 float currentSpeed = vehicle.Speed * 3.6f;
                 float speedLimit;

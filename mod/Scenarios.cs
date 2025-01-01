@@ -22,7 +22,7 @@ namespace drivingMod
                 start: new Vector3(217.0f, -810.0f, 30.0f),
                 heading: 90.0f,
                 waypointPos: new Vector3(375.0f, -750.0f, 29.0f),
-                spawnObstacle: true
+                spawnObstacle: false
             ));
 
             list.Add(new TestScenario(
