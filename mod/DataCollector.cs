@@ -18,7 +18,7 @@ namespace DataCollectorNamespace
         {
             Close();
             dataWriter = new StreamWriter(filePath, false);
-            dataWriter.WriteLine("Time,PositionX,PositionY,PositionZ,Speed,SpeedDeviation,Jerk,SteeringAngle,LaneOffset,LaneDepartures,TrafficViolations,CollisionDetected");
+            dataWriter.WriteLine("Time;PositionX;PositionY;PositionZ;Speed;SpeedDeviation;Jerk;SteeringAngle;LaneOffset;LaneDepartures;TrafficViolations;CollisionDetected");
             lastPosition = Vector3.Zero;
             lastSpeed = 0f;
             lastUpdateTime = DateTime.Now;
@@ -60,7 +60,7 @@ namespace DataCollectorNamespace
 
                 bool collisionDetected = CheckCollisions(vehicle);
 
-                string line = $"{now},{currentPosition.X},{currentPosition.Y},{currentPosition.Z},{currentSpeed},{speedDeviation},{jerk},{steeringAngle},{laneOffset},{laneDepartureCount},{trafficViolations},{collisionDetected}";
+                string line = $"{now};{currentPosition.X};{currentPosition.Y};{currentPosition.Z};{currentSpeed};{speedDeviation};{jerk};{steeringAngle};{laneOffset};{laneDepartureCount};{trafficViolations};{collisionDetected}";
                 dataWriter.WriteLine(line);
 
                 lastPosition = currentPosition;

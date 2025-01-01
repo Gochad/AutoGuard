@@ -8,7 +8,8 @@ columns = [
     'Jerk', 'SteeringAngle', 'LaneOffset', 'LaneDepartures', 'TrafficViolations', 'CollisionDetected'
 ]
 
-data = pd.read_csv(filename, names=columns, skiprows=1)
+data = pd.read_csv(filename, names=columns, skiprows=1, delimiter=';')
+
 data['Time'] = pd.to_datetime(data['Time'], format='%d.%m.%Y %H:%M:%S', errors='coerce')
 
 data['ElapsedTime'] = (data['Time'] - data['Time'].iloc[0]).dt.total_seconds()
