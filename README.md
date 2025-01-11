@@ -16,7 +16,9 @@ I am currently using the [seamless autonomous driving mod](https://www.gta5-mods
    - Rockstar Games Launcher (and be already logged in)
 
 ### Running
-run `python env/app.py`
+1. clone repo
+2. testing stage: run `python env/app.py` to open game and run test suite
+3. analyzing stage: run `python processing/main.py > output.txt` to generate raport from testing stage
 
 ### How it works
 - `env` - python script to load mods, saves and run game
@@ -31,7 +33,6 @@ sequenceDiagram
     participant script as script
     participant GTA as GTA V
     participant file as data file
-    participant db as db
 
     user->>script: run script
     script->>GTA: Launch GTA V
@@ -45,16 +46,8 @@ sequenceDiagram
     end
 
     script->>script: Process results
-    script->>user: Display results
-    script->>db: Save results
+    script->>user: Print results on console (or save to file)
 ```
-
-### TODO
-1. add db (probably mongodb)
-2. be prepared to integrate with other autonomous riding envs (other than seamless autonomous driving mod)
-
-### shortterm
-add clear metrics if ride was good or not
 
 ### More informations
 [more docs](https://docs.google.com/document/d/1IKcRw_cjcgbgFVxM3nnlapJooMkW_Ll9Ibul6B54esw)
