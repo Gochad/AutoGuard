@@ -44,7 +44,7 @@ namespace drivingMod
 
             if (currentScenario.IsNearWaypoint())
             {
-                currentScenario.EndScenario();
+                currentScenario.EndScenario(dataCollector);
                 testManager.StartNextScenario();
                 UpdateDataCollectorFile();
             }

@@ -31,19 +31,22 @@ namespace drivingMod
 
         public void PrepareAndExecuteScenario(DrivingMetricsCollector dataCollector)
         {
+            GTA.UI.Screen.ShowSubtitle("exectution", 5000);
             scenarioStartTime = DateTime.Now;
             SetWaypoint();
             SpawnVehicle();
             EnterVehicle();
+            
+            CollectMetrics(dataCollector);
 
-            while (!IsNearWaypoint())
-            {
-                CollectMetrics(dataCollector);
-                CheckTimeLimit(dataCollector);
-                Script.Wait(100);
-            }
+            // while (!IsNearWaypoint())
+            // {
+            //     
+            //     CheckTimeLimit(dataCollector);
+            //     Script.Wait(100);
+            // }
 
-            EndScenario(dataCollector);
+            // EndScenario(dataCollector);
         }
 
         public void SetWaypoint()
