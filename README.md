@@ -49,5 +49,28 @@ sequenceDiagram
     script->>user: Print results on console (or save to file)
 ```
 
+### DrivingMetricsCollector Metrics
+
+Below is a brief explanation of each metric gathered and recorded by the **DrivingMetricsCollector**. These metrics are logged to a CSV file for post-processing and analysis.
+
+| **Metric**              | **Description**  |
+|-------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Time**               | Timestamp (date and time)|
+| **PositionX/Y/Z**      | The vehicle's coordinates in the GTA V world space at the time of recording|
+| **Speed**              | The current speed of the vehicle in meters per second (m/s)|
+| **SpeedDeviation**     | The absolute difference between the vehicle's current speed and the zone-based speed limit. Speed limits depend on the recognized area (e.g., highway/city/other)|
+| **Jerk**               | The rate of change of acceleration (m/s³). Computed by comparing the difference in speed (m/s) between consecutive samples over the time between samples. High jerk values may indicate aggressive or jerky driving maneuvers|
+| **SteeringAngle**      | The current steering angle of the vehicle's wheels (in degrees) at the time of recording. Positive or negative values indicate turning direction|
+| **LaneOffset**         | A measure (in meters) of how far the vehicle is from the center of its lane. A high offset might suggest drifting or lane departure|
+| **LaneDepartures**     | Cumulative count of lane departures. Each time the vehicle's *LaneOffset* exceeds a threshold (e.g., 1.5 m) from the lane center, this count increments|
+| **TrafficViolations**  | Cumulative count of traffic violations (e.g., running a red light, ignoring a stop sign)|
+| **CollisionDetected**  | Boolean (`True`/`False`) indicating whether the vehicle collided with any object since the last check|
+| **ScenarioCompleted**  | Indicates whether the driving scenario is marked as **“Success”** (reached the goal before timeout) or **“Failed”**|
+---
+
+### todo shortterm
+1. make time limit for tc
+2. check if every metric has sense
+
 ### More informations
 [more docs](https://docs.google.com/document/d/1IKcRw_cjcgbgFVxM3nnlapJooMkW_Ll9Ibul6B54esw)
