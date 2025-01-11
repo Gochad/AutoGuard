@@ -16,7 +16,7 @@ namespace drivingMod
                 waypointPos: new Vector3(-1034.6f, -2733.6f, 20.0f),
                 spawnObstacle: false
             ));
-            
+
             list.Add(new TestScenario(
                 name: "Test2_uphill",
                 start: new Vector3(430f, 320f, 103.3f),

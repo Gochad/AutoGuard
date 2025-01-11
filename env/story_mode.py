@@ -16,6 +16,7 @@ def activate_gta_window():
     if gta_window:
         gta_window[0].activate()
         print("Activated GTA V window.")
+        time.sleep(2)
     else:
         print("GTA V window not found.")
 
@@ -28,6 +29,7 @@ def click_story_mode(window_bounds):
     print(f"Clicking at ({click_x}, {click_y}) for STORY MODE")
 
     pydirectinput.moveTo(click_x, click_y)
+    time.sleep(0.5)
     pydirectinput.press('enter')
 
 def wait_for_story_mode_screen():
