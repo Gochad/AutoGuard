@@ -66,7 +66,6 @@ def generate_report(filename):
         score = max(0, score)
 
         report = f"\n========= DRIVING QUALITY REPORT FOR {filename} =========\n"
-        report += f"Scenario Result: {scenario_result}\n\n"
         report += f"Total Time (s): {total_time:.2f}\n"
         report += f"Total Distance (km): {distance_km:.2f}\n"
         report += f"Average Speed (m/s): {avg_speed:.2f}\n"

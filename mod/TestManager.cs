@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DataCollectorNamespace;
 using GTA;
 
 namespace drivingMod
@@ -12,17 +13,23 @@ namespace drivingMod
         public bool TestInProgress { get; private set; } = false;
         public event Action OnAllScenariosCompleted;
 
-        public void AddScenario(TestScenario scenario)
-        {
-            scenariosQueue.Enqueue(scenario);
-        }
+        private Dictionary<TestScenario, int> scenarioTimeLimits = new Dictionary<TestScenario, int>();
 
-        public void AddScenarios(IEnumerable<TestScenario> scenarioList)
+        private DateTime scenarioStartTime;
+        private bool scenarioRunning = false;
+
+        public void AddScenarios(IEnumerable<TestScenario> scenarioList, int defaultTimeLimit = 180)
         {
             foreach (var scenario in scenarioList)
             {
                 scenariosQueue.Enqueue(scenario);
+                scenarioTimeLimits[scenario] = defaultTimeLimit; 
             }
+        }
+
+        public TestScenario GetCurrentScenario()
+        {
+            return currentScenario;
         }
 
         public void StartNextScenario()
@@ -31,20 +38,38 @@ namespace drivingMod
             {
                 currentScenario = scenariosQueue.Dequeue();
                 SetupScenario(currentScenario);
+
                 TestInProgress = true;
+                scenarioRunning = true;
+                scenarioStartTime = DateTime.Now;
             }
             else
             {
                 currentScenario = null;
                 TestInProgress = false;
+                scenarioRunning = false;
 
                 OnAllScenariosCompleted?.Invoke();
             }
         }
-
-        public TestScenario GetCurrentScenario()
+        public void UpdateTimeLimit(DrivingMetricsCollector dataCollector)
         {
-            return currentScenario;
+            if (!scenarioRunning || currentScenario == null)
+                return;
+            
+            double elapsed = (DateTime.Now - scenarioStartTime).TotalSeconds;
+
+            int limit = scenarioTimeLimits[currentScenario];
+
+            if (elapsed > limit)
+            {
+                currentScenario.EndScenario(dataCollector);
+
+                scenarioRunning = false;
+                TestInProgress = false;
+
+                StartNextScenario();
+            }
         }
 
         private void SetupScenario(TestScenario scenario)

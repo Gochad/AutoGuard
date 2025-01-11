@@ -1,7 +1,6 @@
 using GTA;
 using GTA.Math;
 using DataCollectorNamespace;
-using System;
 
 namespace drivingMod
 {
@@ -16,45 +15,36 @@ namespace drivingMod
         private bool hasEnteredVehicle = false;
         private bool isVehicleSpawned = false;
 
-        public int TimeLimit { get; set; }
-        private DateTime? scenarioStartTime;
-
-        public TestScenario(string name, Vector3 start, float heading, Vector3 waypointPos, bool spawnObstacle, int timeLimit)
+        public TestScenario(
+            string name,
+            Vector3 start,
+            float heading,
+            Vector3 waypointPos,
+            bool spawnObstacle
+        )
         {
             Name = name;
             StartPosition = start;
             StartHeading = heading;
             WaypointPosition = waypointPos;
             SpawnObstacle = spawnObstacle;
-            TimeLimit = timeLimit;
         }
 
         public void PrepareAndExecuteScenario(DrivingMetricsCollector dataCollector)
         {
-            GTA.UI.Screen.ShowSubtitle("exectution", 5000);
-            scenarioStartTime = DateTime.Now;
             SetWaypoint();
             SpawnVehicle();
             EnterVehicle();
-            
+
             CollectMetrics(dataCollector);
-
-            // while (!IsNearWaypoint())
-            // {
-            //     
-            //     CheckTimeLimit(dataCollector);
-            //     Script.Wait(100);
-            // }
-
-            // EndScenario(dataCollector);
         }
 
-        public void SetWaypoint()
+        private void SetWaypoint()
         {
             WaypointManager.SetWaypoint(WaypointPosition.X, WaypointPosition.Y);
         }
 
-        public void SpawnVehicle()
+        private void SpawnVehicle()
         {
             if (!isVehicleSpawned)
             {
@@ -80,7 +70,7 @@ namespace drivingMod
             }
         }
 
-        public void EnterVehicle()
+        private void EnterVehicle()
         {
             if (!hasEnteredVehicle || currentVehicle == null || !currentVehicle.Exists())
             {
@@ -115,19 +105,6 @@ namespace drivingMod
             return distanceToWaypoint < 30.0f;
         }
 
-        public void CheckTimeLimit(DrivingMetricsCollector dataCollector)
-        {
-            if (scenarioStartTime.HasValue)
-            {
-                double elapsedTime = (DateTime.Now - scenarioStartTime.Value).TotalSeconds;
-
-                if (elapsedTime > TimeLimit)
-                {
-                    EndScenario(dataCollector);
-                }
-            }
-        }
-
         public void EndScenario(DrivingMetricsCollector dataCollector)
         {
             if (IsNearWaypoint())
@@ -144,7 +121,6 @@ namespace drivingMod
             hasEnteredVehicle = false;
             isVehicleSpawned = false;
 
-            dataCollector.Close();
         }
     }
 }

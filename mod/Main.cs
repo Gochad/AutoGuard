@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using GTA;
 using DataCollectorNamespace;
@@ -13,11 +12,6 @@ namespace drivingMod
         private DrivingMetricsCollector dataCollector;
         private TestManager testManager;
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
-        private static extern bool PostMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
-
-        private const int WM_CLOSE = 0x0010;
-
         public Main()
         {
             Tick += OnTick;
@@ -27,7 +21,8 @@ namespace drivingMod
             testManager = new TestManager();
 
             var allScenarios = Scenarios.GetAllScenarios();
-            testManager.AddScenarios(allScenarios);
+
+            testManager.AddScenarios(allScenarios, defaultTimeLimit: 180);
 
             testManager.OnAllScenariosCompleted += HandleAllScenariosCompleted;
 
@@ -40,8 +35,10 @@ namespace drivingMod
         {
             var currentScenario = testManager.GetCurrentScenario();
             if (currentScenario == null) return;
-
+            
             currentScenario.PrepareAndExecuteScenario(dataCollector);
+
+            testManager.UpdateTimeLimit(dataCollector);
 
             if (currentScenario.IsNearWaypoint())
             {
@@ -62,7 +59,6 @@ namespace drivingMod
                         testManager.StartNextScenario();
                         UpdateDataCollectorFile();
                     }
-
                     break;
 
                 case Keys.F8:
@@ -121,27 +117,13 @@ namespace drivingMod
                 dataCollector.SetOutputFile(scenarioFilePath);
             }
         }
-
         private void HandleAllScenariosCompleted()
         {
             dataCollector.Close();
 
             GTA.UI.Notification.Show("Scenarios are done. Game is closing...");
 
-            CloseGameWindow();
-
             KillGameProcess();
-        }
-
-        private void CloseGameWindow()
-        {
-            Process[] processes = Process.GetProcessesByName("GTA5");
-            if (processes.Length > 0)
-            {
-                Process gtaProcess = processes[0];
-                IntPtr hWnd = gtaProcess.MainWindowHandle;
-                PostMessage(hWnd, WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
-            }
         }
 
         private void KillGameProcess()
