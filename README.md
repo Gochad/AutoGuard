@@ -1,6 +1,8 @@
 # AutoGuard
 Implementation of autonomous self driving test environment using GTA V for future autonomous driving security and functional safety tests.
 
+Additionally, this project includes a Python script that automatically launches GTA V with the mod to run test scenarios and collect driving data, as well as a post-processing script that analyzes the recorded metrics (e.g., speed, collisions) and generates report.
+
 I am currently using the [seamless autonomous driving mod](https://www.gta5-mods.com/scripts/seamless-autonomous-driving-mod-no-keys-menus-or-buttons) to test autonomous driving in GTA V. However, for effective testing, it is essential to have a component that can interact with the graphical interface of GTA V, providing inputs and monitoring outputs dynamically.
 
 ## Getting Started
