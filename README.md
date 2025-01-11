@@ -51,7 +51,7 @@ sequenceDiagram
     script->>user: Print results on console (or save to file)
 ```
 
-### DrivingMetricsCollector Metrics
+### Driving metrics
 
 Below is a brief explanation of each metric gathered and recorded by the **DrivingMetricsCollector**. These metrics are logged to a CSV file for post-processing and analysis.
 
