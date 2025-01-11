@@ -1,6 +1,7 @@
 using GTA;
 using GTA.Math;
 using DataCollectorNamespace;
+using System;
 
 namespace drivingMod
 {
@@ -15,21 +16,34 @@ namespace drivingMod
         private bool hasEnteredVehicle = false;
         private bool isVehicleSpawned = false;
 
-        public TestScenario(string name, Vector3 start, float heading, Vector3 waypointPos, bool spawnObstacle)
+        public int TimeLimit { get; set; }
+        private DateTime? scenarioStartTime;
+
+        public TestScenario(string name, Vector3 start, float heading, Vector3 waypointPos, bool spawnObstacle, int timeLimit)
         {
             Name = name;
             StartPosition = start;
             StartHeading = heading;
             WaypointPosition = waypointPos;
             SpawnObstacle = spawnObstacle;
+            TimeLimit = timeLimit;
         }
 
         public void PrepareAndExecuteScenario(DrivingMetricsCollector dataCollector)
         {
+            scenarioStartTime = DateTime.Now;
             SetWaypoint();
             SpawnVehicle();
             EnterVehicle();
-            CollectMetrics(dataCollector);
+
+            while (!IsNearWaypoint())
+            {
+                CollectMetrics(dataCollector);
+                CheckTimeLimit(dataCollector);
+                Script.Wait(100);
+            }
+
+            EndScenario(dataCollector);
         }
 
         public void SetWaypoint()
@@ -98,8 +112,26 @@ namespace drivingMod
             return distanceToWaypoint < 30.0f;
         }
 
-        public void EndScenario()
+        public void CheckTimeLimit(DrivingMetricsCollector dataCollector)
         {
+            if (scenarioStartTime.HasValue)
+            {
+                double elapsedTime = (DateTime.Now - scenarioStartTime.Value).TotalSeconds;
+
+                if (elapsedTime > TimeLimit)
+                {
+                    EndScenario(dataCollector);
+                }
+            }
+        }
+
+        public void EndScenario(DrivingMetricsCollector dataCollector)
+        {
+            if (IsNearWaypoint())
+            {
+                dataCollector.MarkScenarioAsCompleted();
+            }
+
             if (currentVehicle != null && currentVehicle.Exists())
             {
                 currentVehicle.Delete();
@@ -108,6 +140,8 @@ namespace drivingMod
 
             hasEnteredVehicle = false;
             isVehicleSpawned = false;
+
+            dataCollector.Close();
         }
     }
 }

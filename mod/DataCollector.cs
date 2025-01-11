@@ -14,12 +14,13 @@ namespace DataCollectorNamespace
         private DateTime lastUpdateTime;
         private int laneDepartureCount = 0;
         private DateTime lastLoggedTime = DateTime.MinValue;
+        private bool scenarioCompleted = false;
 
         public void SetOutputFile(string filePath)
         {
             Close();
             dataWriter = new StreamWriter(filePath, false);
-            dataWriter.WriteLine("Time;PositionX;PositionY;PositionZ;Speed;SpeedDeviation;Jerk;SteeringAngle;LaneOffset;LaneDepartures;TrafficViolations;CollisionDetected");
+            dataWriter.WriteLine("Time;PositionX;PositionY;PositionZ;Speed;SpeedDeviation;Jerk;SteeringAngle;LaneOffset;LaneDepartures;TrafficViolations;CollisionDetected;ScenarioCompleted");
             lastPosition = Vector3.Zero;
             lastSpeed = 0f;
             lastUpdateTime = DateTime.Now;
@@ -50,7 +51,6 @@ namespace DataCollectorNamespace
                 else
                     speedLimit = 30f / 3.6f;
 
-
                 float laneOffset = CalculateLaneOffset(vehicle);
                 bool laneDeparture = Math.Abs(laneOffset) > 1.5f;
 
@@ -69,12 +69,27 @@ namespace DataCollectorNamespace
 
                 bool collisionDetected = CheckCollisions(vehicle);
 
-                string line = $"{now};{currentPosition.X};{currentPosition.Y};{currentPosition.Z};{currentSpeed};{speedDeviation};{jerk};{steeringAngle};{laneOffset};{laneDepartureCount};{trafficViolations};{collisionDetected}";
+                string line = $"{now};{currentPosition.X};{currentPosition.Y};{currentPosition.Z};{currentSpeed};{speedDeviation};{jerk};{steeringAngle};{laneOffset};{laneDepartureCount};{trafficViolations};{collisionDetected};{(scenarioCompleted ? "Success" : "Failed")}";
                 dataWriter.WriteLine(line);
 
                 lastPosition = currentPosition;
                 lastSpeed = currentSpeed;
                 lastUpdateTime = now;
+            }
+        }
+
+        public void MarkScenarioAsCompleted()
+        {
+            scenarioCompleted = true;
+        }
+
+        public void Close()
+        {
+            if (dataWriter != null)
+            {
+                dataWriter.WriteLine($"Scenario ended;{(scenarioCompleted ? "Success" : "Failed")}");
+                dataWriter.Close();
+                dataWriter = null;
             }
         }
 
@@ -138,15 +153,6 @@ namespace DataCollectorNamespace
         private bool CheckCollisions(Vehicle vehicle)
         {
             return Function.Call<bool>(Hash.HAS_ENTITY_COLLIDED_WITH_ANYTHING, vehicle);
-        }
-
-        public void Close()
-        {
-            if (dataWriter != null)
-            {
-                dataWriter.Close();
-                dataWriter = null;
-            }
         }
     }
 }

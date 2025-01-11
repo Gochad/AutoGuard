@@ -14,7 +14,8 @@ namespace drivingMod
                 start: new Vector3(-1034.6f, -2733.6f, 20.0f),
                 heading: 240.0f,
                 waypointPos: new Vector3(-1034.6f, -2733.6f, 20.0f),
-                spawnObstacle: false
+                spawnObstacle: false,
+                timeLimit: 180
             ));
 
             list.Add(new TestScenario(
@@ -22,7 +23,8 @@ namespace drivingMod
                 start: new Vector3(430f, 320f, 103.3f),
                 heading: 0.0f,
                 waypointPos: new Vector3(535.3f, 1069.7f, 225.1f),
-                spawnObstacle: false
+                spawnObstacle: false,
+                timeLimit: 180
             ));
 
             list.Add(new TestScenario(
@@ -30,7 +32,8 @@ namespace drivingMod
                 start: new Vector3(367.3f, -581.4f, 28.7f),
                 heading: 90.0f,
                 waypointPos: new Vector3(799.2f, -1485.7f, 27),
-                spawnObstacle: false
+                spawnObstacle: false,
+                timeLimit: 180
             ));
 
             list.Add(new TestScenario(
@@ -38,7 +41,8 @@ namespace drivingMod
                 start: new Vector3(1387, -1615.1f, 55.6f),
                 heading: 45.0f,
                 waypointPos: new Vector3(1729.1f, -1582.9f, 111.8f),
-                spawnObstacle: false
+                spawnObstacle: false,
+                timeLimit: 180
             ));
 
             list.Add(new TestScenario(
@@ -46,7 +50,8 @@ namespace drivingMod
                 start: new Vector3(857.6f, 111.4f, 70),
                 heading: 270.0f,
                 waypointPos: new Vector3(2063.8f, 1435.2f, 75.1f),
-                spawnObstacle: false
+                spawnObstacle: false,
+                timeLimit: 180
             ));
             
             return list;
