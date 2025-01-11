@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using GTA;
 
@@ -9,6 +10,7 @@ namespace drivingMod
         private TestScenario currentScenario = null;
 
         public bool TestInProgress { get; private set; } = false;
+        public event Action OnAllScenariosCompleted;
 
         public void AddScenario(TestScenario scenario)
         {
@@ -35,6 +37,8 @@ namespace drivingMod
             {
                 currentScenario = null;
                 TestInProgress = false;
+
+                OnAllScenariosCompleted?.Invoke();
             }
         }
 
@@ -48,7 +52,10 @@ namespace drivingMod
             Game.Player.Character.Position = scenario.StartPosition;
             Game.Player.Character.Heading = scenario.StartHeading;
 
-            WaypointManager.SetWaypoint(scenario.WaypointPosition.X, scenario.WaypointPosition.Y);
+            WaypointManager.SetWaypoint(
+                scenario.WaypointPosition.X, 
+                scenario.WaypointPosition.Y
+            );
 
             if (scenario.SpawnObstacle)
             {

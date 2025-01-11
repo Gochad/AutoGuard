@@ -31,12 +31,6 @@ def generate_report(filename):
 
         data['CollisionDetected'] = data['CollisionDetected'].apply(lambda x: 1 if str(x).lower() in ['true', '1'] else 0)
 
-        if 'ScenarioCompleted' in data.columns:
-            data['ScenarioCompleted'] = data['ScenarioCompleted'].fillna('Unknown').astype(str)
-            scenario_result = data['ScenarioCompleted'].iloc[-1]
-        else:
-            scenario_result = 'NoInfo'
-
         total_time = data['ElapsedTime'].iloc[-1] - data['ElapsedTime'].iloc[0]
         avg_speed = data['Speed'].mean()
         distance_m = avg_speed * total_time
