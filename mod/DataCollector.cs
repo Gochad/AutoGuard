@@ -38,17 +38,18 @@ namespace DataCollectorNamespace
                 lastLoggedTime = now;
 
                 Vector3 currentPosition = vehicle.Position;
-                float currentSpeed = vehicle.Speed * 3.6f;
+                float currentSpeed = vehicle.Speed;
                 float speedLimit;
                 Vector3 vehiclePosition = vehicle.Position;
                 string zoneName = Function.Call<string>(Hash.GET_NAME_OF_ZONE, vehiclePosition.X, vehiclePosition.Y, vehiclePosition.Z);
 
                 if (zoneName == "HIGHWAY")
-                    speedLimit = 120f;
+                    speedLimit = 120f / 3.6f;
                 else if (zoneName == "CITY")
-                    speedLimit = 50f;
+                    speedLimit = 50f / 3.6f;
                 else
-                    speedLimit = 30f;
+                    speedLimit = 30f / 3.6f;
+
 
                 float laneOffset = CalculateLaneOffset(vehicle);
                 bool laneDeparture = Math.Abs(laneOffset) > 1.5f;
