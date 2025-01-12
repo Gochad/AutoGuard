@@ -42,8 +42,6 @@ namespace drivingMod
         {
             if (scenariosQueue.Count > 0)
             {
-                // EndCurrentScenario();
-
                 currentScenario = scenariosQueue.Dequeue();
                 SetupScenario(currentScenario);
 
@@ -61,8 +59,6 @@ namespace drivingMod
             }
             else
             {
-                // EndCurrentScenario();
-
                 currentScenario = null;
                 TestInProgress = false;
                 scenarioRunning = false;
@@ -111,11 +107,7 @@ namespace drivingMod
                 scenario.WaypointPosition.X,
                 scenario.WaypointPosition.Y
             );
-
-            if (scenario.SpawnObstacle)
-            {
-                ObstacleManager.AddObstacle();
-            }
+            
         }
     }
 }

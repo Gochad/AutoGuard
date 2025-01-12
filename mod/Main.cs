@@ -11,6 +11,7 @@ namespace drivingMod
         private Vehicle currentVehicle;
         private DrivingMetricsCollector dataCollector;
         private TestManager testManager;
+        private DateTime lastObstacleSpawnTime = DateTime.Now;
 
         public Main()
         {
@@ -42,6 +43,41 @@ namespace drivingMod
             {
                 currentScenario.EndScenario(dataCollector, true);
                 testManager.StartNextScenario();
+            }
+            
+            if (testManager.TestInProgress)
+            {
+                double elapsed = (DateTime.Now - lastObstacleSpawnTime).TotalSeconds;
+                switch (currentScenario.SpawnObstacle)
+                {
+                    case "barrier":
+                        if (elapsed >= 10.0)
+                        {
+                            ObstacleManager.AddObstacle();
+                            lastObstacleSpawnTime = DateTime.Now;
+
+                            GTA.UI.Notification.Show("OBSTACLE WAS ADDED!");
+                        }
+                        break;
+                    case "human":
+                        if (elapsed >= 40.0)
+                        {
+                            ObstacleManager.AddPedObstacle();
+                            lastObstacleSpawnTime = DateTime.Now;
+
+                            GTA.UI.Notification.Show("PEDESTRIAN WAS ADDED!");
+                        }
+                        break;
+                    case "random":
+                        if (elapsed >= 20.0)
+                        {
+                            ObstacleManager.AddConesInFrontOfPlayer(5);
+                            lastObstacleSpawnTime = DateTime.Now;
+
+                            GTA.UI.Notification.Show("RANDOM OBSTACLE WAS ADDED!");
+                        }
+                        break;
+                }
             }
         }
 

@@ -70,8 +70,7 @@ Below is a brief explanation of each metric gathered and recorded by the **Drivi
 ---
 
 ### todo shortterm
-1. make time limit for tc
-2. check if every metric has sense
+1. check if every metric has sense
 
 ### More informations
 [more docs](https://docs.google.com/document/d/1IKcRw_cjcgbgFVxM3nnlapJooMkW_Ll9Ibul6B54esw)

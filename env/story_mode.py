@@ -29,7 +29,8 @@ def click_story_mode(window_bounds):
     print(f"Clicking at ({click_x}, {click_y}) for STORY MODE")
 
     pydirectinput.moveTo(click_x, click_y)
-    time.sleep(0.5)
+    time.sleep(2)
+
     pydirectinput.press('enter')
 
 def wait_for_story_mode_screen():
