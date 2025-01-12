@@ -67,7 +67,6 @@ Below is a brief explanation of each metric gathered and recorded by the **Drivi
 | **LaneDepartures**     | Cumulative count of lane departures. Each time the vehicle's *LaneOffset* exceeds a threshold (e.g., 1.5 m) from the lane center, this count increments|
 | **TrafficViolations**  | Cumulative count of traffic violations (e.g., running a red light, ignoring a stop sign)|
 | **CollisionDetected**  | Boolean (`True`/`False`) indicating whether the vehicle collided with any object since the last check|
-| **ScenarioCompleted**  | Indicates whether the driving scenario is marked as **“Success”** (reached the goal before timeout) or **“Failed”**|
 ---
 
 ### todo shortterm
