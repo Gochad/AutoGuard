@@ -15,7 +15,13 @@ namespace drivingMod
         private bool hasEnteredVehicle = false;
         private bool isVehicleSpawned = false;
 
-        public TestScenario(string name, Vector3 start, float heading, Vector3 waypointPos, bool spawnObstacle)
+        public TestScenario(
+            string name,
+            Vector3 start,
+            float heading,
+            Vector3 waypointPos,
+            bool spawnObstacle
+        )
         {
             Name = name;
             StartPosition = start;
@@ -29,15 +35,16 @@ namespace drivingMod
             SetWaypoint();
             SpawnVehicle();
             EnterVehicle();
+
             CollectMetrics(dataCollector);
         }
 
-        public void SetWaypoint()
+        private void SetWaypoint()
         {
             WaypointManager.SetWaypoint(WaypointPosition.X, WaypointPosition.Y);
         }
 
-        public void SpawnVehicle()
+        private void SpawnVehicle()
         {
             if (!isVehicleSpawned)
             {
@@ -63,7 +70,7 @@ namespace drivingMod
             }
         }
 
-        public void EnterVehicle()
+        private void EnterVehicle()
         {
             if (!hasEnteredVehicle || currentVehicle == null || !currentVehicle.Exists())
             {
@@ -95,11 +102,16 @@ namespace drivingMod
             }
 
             float distanceToWaypoint = Vector3.Distance(currentVehicle.Position, WaypointPosition);
-            return distanceToWaypoint < 30.0f;
+            return distanceToWaypoint < 5.0f;
         }
 
-        public void EndScenario()
+        public void EndScenario(DrivingMetricsCollector dataCollector, bool success)
         {
+            if (success)
+            {
+                dataCollector.MarkScenarioAsCompleted();
+            }
+
             if (currentVehicle != null && currentVehicle.Exists())
             {
                 currentVehicle.Delete();
@@ -108,6 +120,7 @@ namespace drivingMod
 
             hasEnteredVehicle = false;
             isVehicleSpawned = false;
+
         }
     }
 }

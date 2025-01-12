@@ -14,6 +14,7 @@ namespace DataCollectorNamespace
         private DateTime lastUpdateTime;
         private int laneDepartureCount = 0;
         private DateTime lastLoggedTime = DateTime.MinValue;
+        private bool scenarioCompleted = false;
 
         public void SetOutputFile(string filePath)
         {
@@ -27,6 +28,11 @@ namespace DataCollectorNamespace
 
         public void CollectMetrics(Vehicle vehicle)
         {
+            if (dataWriter == null)
+            {
+                throw new InvalidOperationException("No output file set for DrivingMetricsCollector.");
+            }
+            
             if (vehicle != null && vehicle.Exists())
             {
                 DateTime now = DateTime.Now;
@@ -38,17 +44,17 @@ namespace DataCollectorNamespace
                 lastLoggedTime = now;
 
                 Vector3 currentPosition = vehicle.Position;
-                float currentSpeed = vehicle.Speed * 3.6f;
+                float currentSpeed = vehicle.Speed;
                 float speedLimit;
                 Vector3 vehiclePosition = vehicle.Position;
                 string zoneName = Function.Call<string>(Hash.GET_NAME_OF_ZONE, vehiclePosition.X, vehiclePosition.Y, vehiclePosition.Z);
 
                 if (zoneName == "HIGHWAY")
-                    speedLimit = 120f;
+                    speedLimit = 120f / 3.6f;
                 else if (zoneName == "CITY")
-                    speedLimit = 50f;
+                    speedLimit = 50f / 3.6f;
                 else
-                    speedLimit = 30f;
+                    speedLimit = 30f / 3.6f;
 
                 float laneOffset = CalculateLaneOffset(vehicle);
                 bool laneDeparture = Math.Abs(laneOffset) > 1.5f;
@@ -74,6 +80,21 @@ namespace DataCollectorNamespace
                 lastPosition = currentPosition;
                 lastSpeed = currentSpeed;
                 lastUpdateTime = now;
+            }
+        }
+
+        public void MarkScenarioAsCompleted()
+        {
+            scenarioCompleted = true;
+        }
+
+        public void Close()
+        {
+            if (dataWriter != null)
+            {
+                dataWriter.WriteLine($"{(scenarioCompleted ? "success" : "failure")}");
+                dataWriter.Close();
+                dataWriter = null;
             }
         }
 
@@ -137,15 +158,6 @@ namespace DataCollectorNamespace
         private bool CheckCollisions(Vehicle vehicle)
         {
             return Function.Call<bool>(Hash.HAS_ENTITY_COLLIDED_WITH_ANYTHING, vehicle);
-        }
-
-        public void Close()
-        {
-            if (dataWriter != null)
-            {
-                dataWriter.Close();
-                dataWriter = null;
-            }
         }
     }
 }

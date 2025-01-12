@@ -11,22 +11,28 @@ def generate_report(filename):
     columns = [
         'Time', 'PositionX', 'PositionY', 'PositionZ', 'Speed', 'SpeedDeviation',
         'Jerk', 'SteeringAngle', 'LaneOffset', 'LaneDepartures', 
-        'TrafficViolations', 'CollisionDetected'
+        'TrafficViolations', 'CollisionDetected', 'ScenarioCompleted'
     ]
 
     try:
         data = pd.read_csv(filename, names=columns, skiprows=1, delimiter=';')
+        last_line = data.iloc[-1]["Time"]
+        data = data.iloc[:-1]
+
         data['Time'] = pd.to_datetime(data['Time'], format='%d.%m.%Y %H:%M:%S', errors='coerce')
         data['ElapsedTime'] = (data['Time'] - data['Time'].iloc[0]).dt.total_seconds()
-        
-        numeric_cols = ['Speed', 'SpeedDeviation', 'Jerk', 'SteeringAngle', 
-                        'LaneOffset', 'LaneDepartures', 'TrafficViolations']
+
+        numeric_cols = [
+            'Speed', 'SpeedDeviation', 'Jerk', 'SteeringAngle',
+            'LaneOffset', 'LaneDepartures', 'TrafficViolations'
+        ]
         for col in numeric_cols:
             data[col] = pd.to_numeric(data[col], errors='coerce').fillna(0)
 
         data['LaneDepartures'] = data['LaneDepartures'].astype(int)
         data['TrafficViolations'] = data['TrafficViolations'].astype(int)
-        data['CollisionDetected'] = (data['CollisionDetected'] > 0).astype(int)
+
+        data['CollisionDetected'] = data['CollisionDetected'].apply(lambda x: 1 if str(x).lower() in ['true', '1'] else 0)
 
         total_time = data['ElapsedTime'].iloc[-1] - data['ElapsedTime'].iloc[0]
         avg_speed = data['Speed'].mean()
@@ -57,10 +63,13 @@ def generate_report(filename):
             lane_offset_penalty += 10
 
         score = 100
-        score -= (collision_penalty + lane_departure_penalty + violation_penalty + lane_offset_penalty)
-        if jerk_std > 2.0:
-            score -= 10
-        score = max(0, score)
+        if last_line == "failure":
+            score = 0
+        else:
+            score -= (collision_penalty + lane_departure_penalty + violation_penalty + lane_offset_penalty)
+            if jerk_std > 2.0:
+                score -= 10
+            score = max(0, score)
 
         report = f"\n========= DRIVING QUALITY REPORT FOR {filename} =========\n"
         report += f"Total Time (s): {total_time:.2f}\n"
@@ -68,14 +77,15 @@ def generate_report(filename):
         report += f"Average Speed (m/s): {avg_speed:.2f}\n"
         report += f"Max Acceleration (m/s^2): {max_acceleration:.2f}\n"
         report += f"Max Braking (m/s^2): {max_braking:.2f}\n"
-        report += f"Mean Jerk: {jerk_mean:.2f}\n"
-        report += f"Jerk Std Dev: {jerk_std:.2f}\n"
+        report += f"Mean Jerk (m/s^3): {jerk_mean:.2f}\n"
+        report += f"Jerk Std Dev (m/s^3): {jerk_std:.2f}\n"
         report += f"Smooth Trajectory?: {'Yes' if is_smooth else 'No'}\n"
         report += f"\nContinuous Lane Departures: {lane_departure_count}\n"
         report += f"Continuous Traffic Violations: {traffic_violation_count}\n"
         report += f"Continuous Collisions: {collision_count}\n"
-        report += f"Peak Lane Offset: {max_lane_offset:.2f}\n"
+        report += f"Peak Lane Offset (m): {max_lane_offset:.2f}\n"
         report += f"\nRefined Driving Score: {score}\n"
+        report += f"Time limit was overreached?: {'True' if last_line == 'failure' else 'False'}\n"
         return report
 
     except Exception as e:
@@ -88,3 +98,4 @@ if __name__ == '__main__':
             filepath = os.path.join(directory, filename)
             report = generate_report(filepath)
             print(report)
+            
