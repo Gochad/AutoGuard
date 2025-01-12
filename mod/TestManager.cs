@@ -42,8 +42,6 @@ namespace drivingMod
         {
             if (scenariosQueue.Count > 0)
             {
-                // EndCurrentScenario();
-
                 currentScenario = scenariosQueue.Dequeue();
                 SetupScenario(currentScenario);
 
@@ -61,8 +59,6 @@ namespace drivingMod
             }
             else
             {
-                // EndCurrentScenario();
-
                 currentScenario = null;
                 TestInProgress = false;
                 scenarioRunning = false;

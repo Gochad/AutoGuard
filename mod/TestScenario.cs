@@ -62,6 +62,7 @@ namespace drivingMod
                     currentVehicle = World.CreateVehicle(vehicleModel, vehicleSpawnPosition);
                     if (currentVehicle != null && currentVehicle.Exists())
                     {
+                        currentVehicle.LockStatus = VehicleLockStatus.CannotEnterIfDriverExists;
                         currentVehicle.Heading = StartHeading;
                         currentVehicle.IsPersistent = true;
                         isVehicleSpawned = true;
@@ -102,7 +103,7 @@ namespace drivingMod
             }
 
             float distanceToWaypoint = Vector3.Distance(currentVehicle.Position, WaypointPosition);
-            return distanceToWaypoint < 5.0f;
+            return distanceToWaypoint < 30.0f;
         }
 
         public void EndScenario(DrivingMetricsCollector dataCollector, bool success)
