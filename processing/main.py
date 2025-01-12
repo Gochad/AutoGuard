@@ -16,6 +16,9 @@ def generate_report(filename):
 
     try:
         data = pd.read_csv(filename, names=columns, skiprows=1, delimiter=';')
+        last_line = data.iloc[-1]["Time"]
+        data = data.iloc[:-1]
+
         data['Time'] = pd.to_datetime(data['Time'], format='%d.%m.%Y %H:%M:%S', errors='coerce')
         data['ElapsedTime'] = (data['Time'] - data['Time'].iloc[0]).dt.total_seconds()
 
@@ -60,10 +63,13 @@ def generate_report(filename):
             lane_offset_penalty += 10
 
         score = 100
-        score -= (collision_penalty + lane_departure_penalty + violation_penalty + lane_offset_penalty)
-        if jerk_std > 2.0:
-            score -= 10
-        score = max(0, score)
+        if last_line == "failure":
+            score = 0
+        else:
+            score -= (collision_penalty + lane_departure_penalty + violation_penalty + lane_offset_penalty)
+            if jerk_std > 2.0:
+                score -= 10
+            score = max(0, score)
 
         report = f"\n========= DRIVING QUALITY REPORT FOR {filename} =========\n"
         report += f"Total Time (s): {total_time:.2f}\n"
@@ -79,6 +85,7 @@ def generate_report(filename):
         report += f"Continuous Collisions: {collision_count}\n"
         report += f"Peak Lane Offset (m): {max_lane_offset:.2f}\n"
         report += f"\nRefined Driving Score: {score}\n"
+        report += f"Time limit was overreached?: {'True' if last_line == 'failure' else 'False'}\n"
         return report
 
     except Exception as e:

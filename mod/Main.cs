@@ -18,7 +18,7 @@ namespace drivingMod
             KeyDown += OnKeyDown;
 
             dataCollector = new DrivingMetricsCollector();
-            testManager = new TestManager();
+            testManager = new TestManager(dataCollector);
 
             var allScenarios = Scenarios.GetAllScenarios();
 
@@ -38,7 +38,7 @@ namespace drivingMod
             
             currentScenario.PrepareAndExecuteScenario(dataCollector);
 
-            testManager.UpdateTimeLimit(dataCollector);
+            testManager.UpdateTimeLimit();
 
             if (currentScenario.IsNearWaypoint())
             {

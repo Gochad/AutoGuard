@@ -9,6 +9,7 @@ namespace drivingMod
     {
         private Queue<TestScenario> scenariosQueue = new Queue<TestScenario>();
         private TestScenario currentScenario = null;
+        private DrivingMetricsCollector metricsCollector;
 
         public bool TestInProgress { get; private set; } = false;
         public event Action OnAllScenariosCompleted;
@@ -18,12 +19,17 @@ namespace drivingMod
         private DateTime scenarioStartTime;
         private bool scenarioRunning = false;
 
+        public TestManager(DrivingMetricsCollector collector)
+        {
+            metricsCollector = collector ?? throw new ArgumentNullException(nameof(collector));
+        }
+
         public void AddScenarios(IEnumerable<TestScenario> scenarioList, int defaultTimeLimit = 180)
         {
             foreach (var scenario in scenarioList)
             {
                 scenariosQueue.Enqueue(scenario);
-                scenarioTimeLimits[scenario] = defaultTimeLimit; 
+                scenarioTimeLimits[scenario] = defaultTimeLimit;
             }
         }
 
@@ -36,6 +42,8 @@ namespace drivingMod
         {
             if (scenariosQueue.Count > 0)
             {
+                EndCurrentScenario();
+
                 currentScenario = scenariosQueue.Dequeue();
                 SetupScenario(currentScenario);
 
@@ -45,6 +53,8 @@ namespace drivingMod
             }
             else
             {
+                EndCurrentScenario();
+
                 currentScenario = null;
                 TestInProgress = false;
                 scenarioRunning = false;
@@ -52,25 +62,35 @@ namespace drivingMod
                 OnAllScenariosCompleted?.Invoke();
             }
         }
-        public void UpdateTimeLimit(DrivingMetricsCollector dataCollector)
+
+        public void UpdateTimeLimit()
         {
             if (!scenarioRunning || currentScenario == null)
                 return;
-            
-            double elapsed = (DateTime.Now - scenarioStartTime).TotalSeconds;
 
+            double elapsed = (DateTime.Now - scenarioStartTime).TotalSeconds;
             int limit = scenarioTimeLimits[currentScenario];
 
             if (elapsed > limit)
             {
-                currentScenario.EndScenario(dataCollector);
-
-                scenarioRunning = false;
-                TestInProgress = false;
+                EndCurrentScenario();
 
                 StartNextScenario();
             }
         }
+
+        private void EndCurrentScenario()
+        {
+            if (currentScenario != null)
+            {
+                currentScenario.EndScenario(metricsCollector);
+
+                metricsCollector.Close();
+
+                scenarioRunning = false;
+            }
+        }
+
 
         private void SetupScenario(TestScenario scenario)
         {
@@ -78,7 +98,7 @@ namespace drivingMod
             Game.Player.Character.Heading = scenario.StartHeading;
 
             WaypointManager.SetWaypoint(
-                scenario.WaypointPosition.X, 
+                scenario.WaypointPosition.X,
                 scenario.WaypointPosition.Y
             );
 

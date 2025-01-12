@@ -20,7 +20,7 @@ namespace DataCollectorNamespace
         {
             Close();
             dataWriter = new StreamWriter(filePath, false);
-            dataWriter.WriteLine("Time;PositionX;PositionY;PositionZ;Speed;SpeedDeviation;Jerk;SteeringAngle;LaneOffset;LaneDepartures;TrafficViolations;CollisionDetected;ScenarioCompleted");
+            dataWriter.WriteLine("Time;PositionX;PositionY;PositionZ;Speed;SpeedDeviation;Jerk;SteeringAngle;LaneOffset;LaneDepartures;TrafficViolations;CollisionDetected");
             lastPosition = Vector3.Zero;
             lastSpeed = 0f;
             lastUpdateTime = DateTime.Now;
@@ -69,7 +69,7 @@ namespace DataCollectorNamespace
 
                 bool collisionDetected = CheckCollisions(vehicle);
 
-                string line = $"{now};{currentPosition.X};{currentPosition.Y};{currentPosition.Z};{currentSpeed};{speedDeviation};{jerk};{steeringAngle};{laneOffset};{laneDepartureCount};{trafficViolations};{collisionDetected};{(scenarioCompleted ? "Success" : "Failed")}";
+                string line = $"{now};{currentPosition.X};{currentPosition.Y};{currentPosition.Z};{currentSpeed};{speedDeviation};{jerk};{steeringAngle};{laneOffset};{laneDepartureCount};{trafficViolations};{collisionDetected}";
                 dataWriter.WriteLine(line);
 
                 lastPosition = currentPosition;
@@ -87,7 +87,7 @@ namespace DataCollectorNamespace
         {
             if (dataWriter != null)
             {
-                dataWriter.WriteLine($"Scenario ended;{(scenarioCompleted ? "Success" : "Failed")}");
+                dataWriter.WriteLine($"{(scenarioCompleted ? "success" : "failure")}");
                 dataWriter.Close();
                 dataWriter = null;
             }
