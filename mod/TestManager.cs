@@ -107,11 +107,7 @@ namespace drivingMod
                 scenario.WaypointPosition.X,
                 scenario.WaypointPosition.Y
             );
-
-            if (scenario.SpawnObstacle)
-            {
-                ObstacleManager.AddObstacle();
-            }
+            
         }
     }
 }

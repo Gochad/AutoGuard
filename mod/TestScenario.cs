@@ -10,7 +10,7 @@ namespace drivingMod
         public Vector3 StartPosition { get; set; }
         public float StartHeading { get; set; }
         public Vector3 WaypointPosition { get; set; }
-        public bool SpawnObstacle { get; set; }
+        public string SpawnObstacle { get; set; }
         private Vehicle currentVehicle;
         private bool hasEnteredVehicle = false;
         private bool isVehicleSpawned = false;
@@ -20,7 +20,7 @@ namespace drivingMod
             Vector3 start,
             float heading,
             Vector3 waypointPos,
-            bool spawnObstacle
+            string spawnObstacle = ""
         )
         {
             Name = name;
