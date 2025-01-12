@@ -102,12 +102,12 @@ namespace drivingMod
             }
 
             float distanceToWaypoint = Vector3.Distance(currentVehicle.Position, WaypointPosition);
-            return distanceToWaypoint < 30.0f;
+            return distanceToWaypoint < 5.0f;
         }
 
-        public void EndScenario(DrivingMetricsCollector dataCollector)
+        public void EndScenario(DrivingMetricsCollector dataCollector, bool success)
         {
-            if (IsNearWaypoint())
+            if (success)
             {
                 dataCollector.MarkScenarioAsCompleted();
             }

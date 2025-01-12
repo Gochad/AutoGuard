@@ -28,6 +28,11 @@ namespace DataCollectorNamespace
 
         public void CollectMetrics(Vehicle vehicle)
         {
+            if (dataWriter == null)
+            {
+                throw new InvalidOperationException("No output file set for DrivingMetricsCollector.");
+            }
+            
             if (vehicle != null && vehicle.Exists())
             {
                 DateTime now = DateTime.Now;

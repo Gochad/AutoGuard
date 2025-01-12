@@ -27,8 +27,6 @@ namespace drivingMod
             testManager.OnAllScenariosCompleted += HandleAllScenariosCompleted;
 
             testManager.StartNextScenario();
-
-            UpdateDataCollectorFile();
         }
 
         private void OnTick(object sender, EventArgs e)
@@ -42,9 +40,8 @@ namespace drivingMod
 
             if (currentScenario.IsNearWaypoint())
             {
-                currentScenario.EndScenario(dataCollector);
+                currentScenario.EndScenario(dataCollector, true);
                 testManager.StartNextScenario();
-                UpdateDataCollectorFile();
             }
         }
 
@@ -57,7 +54,6 @@ namespace drivingMod
                     {
                         EndCurrentScenario();
                         testManager.StartNextScenario();
-                        UpdateDataCollectorFile();
                     }
                     break;
 
@@ -100,21 +96,6 @@ namespace drivingMod
                     ),
                     positionLog + Environment.NewLine
                 );
-            }
-        }
-
-        private void UpdateDataCollectorFile()
-        {
-            var currentScenario = testManager.GetCurrentScenario();
-            if (currentScenario != null)
-            {
-                string scenarioName = currentScenario.Name;
-                string scenarioFilePath = System.IO.Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                    $"GTA_Data_{scenarioName}.csv"
-                );
-
-                dataCollector.SetOutputFile(scenarioFilePath);
             }
         }
         private void HandleAllScenariosCompleted()

@@ -42,7 +42,7 @@ namespace drivingMod
         {
             if (scenariosQueue.Count > 0)
             {
-                EndCurrentScenario();
+                // EndCurrentScenario();
 
                 currentScenario = scenariosQueue.Dequeue();
                 SetupScenario(currentScenario);
@@ -50,10 +50,18 @@ namespace drivingMod
                 TestInProgress = true;
                 scenarioRunning = true;
                 scenarioStartTime = DateTime.Now;
+
+                string scenarioName = currentScenario.Name;
+                string filePath = System.IO.Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                    $"GTA_Data_{scenarioName}.csv"
+                );
+
+                metricsCollector.SetOutputFile(filePath);
             }
             else
             {
-                EndCurrentScenario();
+                // EndCurrentScenario();
 
                 currentScenario = null;
                 TestInProgress = false;
@@ -62,31 +70,33 @@ namespace drivingMod
                 OnAllScenariosCompleted?.Invoke();
             }
         }
+        
+        public void CompleteScenario()
+        {
+            EndCurrentScenario(true);
+            StartNextScenario();
+        }
 
         public void UpdateTimeLimit()
         {
-            if (!scenarioRunning || currentScenario == null)
-                return;
+            if (!scenarioRunning || currentScenario == null) return;
 
             double elapsed = (DateTime.Now - scenarioStartTime).TotalSeconds;
             int limit = scenarioTimeLimits[currentScenario];
 
             if (elapsed > limit)
             {
-                EndCurrentScenario();
-
+                EndCurrentScenario(false);
                 StartNextScenario();
             }
         }
 
-        private void EndCurrentScenario()
+        private void EndCurrentScenario(bool success)
         {
             if (currentScenario != null)
             {
-                currentScenario.EndScenario(metricsCollector);
-
+                currentScenario.EndScenario(metricsCollector, success);
                 metricsCollector.Close();
-
                 scenarioRunning = false;
             }
         }
