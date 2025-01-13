@@ -15,7 +15,7 @@ def generate_report(filename):
     ]
 
     try:
-        data = pd.read_csv(filename, names=columns, skiprows=1, delimiter=';')
+        data = pd.read_csv(filename, names=columns, skiprows=1, delimiter=';', decimal=',')
         last_line = data.iloc[-1]["Time"]
         data = data.iloc[:-1]
 
