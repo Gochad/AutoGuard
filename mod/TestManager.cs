@@ -66,12 +66,6 @@ namespace drivingMod
                 OnAllScenariosCompleted?.Invoke();
             }
         }
-        
-        public void CompleteScenario()
-        {
-            EndCurrentScenario(true);
-            StartNextScenario();
-        }
 
         public void UpdateTimeLimit()
         {
@@ -91,12 +85,12 @@ namespace drivingMod
         {
             if (currentScenario != null)
             {
+                GTA.UI.Notification.Show($"status: {success}");
                 currentScenario.EndScenario(metricsCollector, success);
                 metricsCollector.Close();
                 scenarioRunning = false;
             }
         }
-
 
         private void SetupScenario(TestScenario scenario)
         {
