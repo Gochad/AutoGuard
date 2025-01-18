@@ -64,7 +64,7 @@ class AutoGuardUI:
 
         selected_scenarios = [self.scenario_listbox.get(i) for i in selected_indices]
 
-        output_file = "selectedScenarios.txt"
+        output_file = "env/mods/scripts/selectedScenarios.txt"
 
         try:
             with open(output_file, "w") as f:
