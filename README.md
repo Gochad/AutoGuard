@@ -27,7 +27,7 @@ I am currently using the [seamless autonomous driving mod](https://www.gta5-mods
 1. clone repo
 2. run `python ui.py`
 
-![tkinter ui for AutoGuard]("gui.png")
+![tkinter ui for AutoGuard](gui.png)
 
 ### How it works
 - `env` - python script to load mods, saves and run game
