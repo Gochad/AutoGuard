@@ -22,6 +22,13 @@ I am currently using the [seamless autonomous driving mod](https://www.gta5-mods
 2. testing stage: run `python env/app.py` to open game and run test suite
 3. analyzing stage: run `python processing/main.py > output.txt` to generate raport from testing stage
 
+
+### GUI alternative:
+1. clone repo
+2. run `python ui.py`
+
+![tkinter ui for AutoGuard]("gui.png")
+
 ### How it works
 - `env` - python script to load mods, saves and run game
 - `mod` - C# gtav mod to set target points on map, find the nearest car to drive and start driving to enable `seamless autonomous driving mod`  
