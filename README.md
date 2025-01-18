@@ -81,3 +81,6 @@ Below is a brief explanation of each metric gathered and recorded by the **Drivi
 
 ### More informations
 [more docs](https://docs.google.com/document/d/1IKcRw_cjcgbgFVxM3nnlapJooMkW_Ll9Ibul6B54esw)
+
+### Videos
+[yt playlist with recorded presentation](https://youtube.com/playlist?list=PLZzxy03PMASrlP8WFFd2-2XLBEmOgB9zx&si=qzKgkkI4egwnW1xi)
