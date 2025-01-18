@@ -22,6 +22,13 @@ I am currently using the [seamless autonomous driving mod](https://www.gta5-mods
 2. testing stage: run `python env/app.py` to open game and run test suite
 3. analyzing stage: run `python processing/main.py > output.txt` to generate raport from testing stage
 
+
+### GUI alternative:
+1. clone repo
+2. run `python ui.py`
+
+![tkinter ui for AutoGuard](gui.png)
+
 ### How it works
 - `env` - python script to load mods, saves and run game
 - `mod` - C# gtav mod to set target points on map, find the nearest car to drive and start driving to enable `seamless autonomous driving mod`  
@@ -74,3 +81,6 @@ Below is a brief explanation of each metric gathered and recorded by the **Drivi
 
 ### More informations
 [more docs](https://docs.google.com/document/d/1IKcRw_cjcgbgFVxM3nnlapJooMkW_Ll9Ibul6B54esw)
+
+### Videos
+[yt playlist with recorded presentation](https://youtube.com/playlist?list=PLZzxy03PMASrlP8WFFd2-2XLBEmOgB9zx&si=qzKgkkI4egwnW1xi)
