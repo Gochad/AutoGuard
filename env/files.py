@@ -100,3 +100,24 @@ def copy_saves_to_all_profiles(saves_folder, profiles_folders):
             dst_path = os.path.join(profile_folder, item)
             shutil.copy2(src_path, dst_path)
         print(f"Saves copied successfully to {profile_folder}.")
+
+def cleanup_test_csv_files():
+
+    documents_dir = os.path.join(os.environ["USERPROFILE"], "Documents")
+
+    deleted_count = 0
+    for root, dirs, files in os.walk(documents_dir):
+        for file in files:
+            if file.startswith("GTA_Data") and file.endswith(".csv"):
+                file_path = os.path.join(root, file)
+                try:
+                    os.remove(file_path)
+                    deleted_count += 1
+                    print(f"Deleted: {file_path}")
+                except Exception as e:
+                    print(f"Could not delete {file_path}. Error: {e}")
+    
+    if deleted_count == 0:
+        print("No 'GTA_Data*.csv' files found in Documents.")
+    else:
+        print(f"Total files deleted: {deleted_count}")

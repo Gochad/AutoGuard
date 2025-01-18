@@ -2,6 +2,10 @@
 using System.Diagnostics;
 using System.Windows.Forms;
 using GTA;
+using System.IO;
+using System.Linq;
+using System.Collections.Generic;
+using System.Reflection;
 using DataCollectorNamespace;
 
 namespace drivingMod
@@ -22,8 +26,20 @@ namespace drivingMod
             testManager = new TestManager(dataCollector);
 
             var allScenarios = Scenarios.GetAllScenarios();
+            
+            var selectedScenarioNames = LoadScenarioSelectionFromFile();
+            
+            List<TestScenario> chosenScenarios;
 
-            testManager.AddScenarios(allScenarios, defaultTimeLimit: 180);
+            if (selectedScenarioNames.Count == 0) {
+                chosenScenarios = allScenarios;
+            } else {
+                chosenScenarios = allScenarios
+                    .Where(s => selectedScenarioNames.Contains(s.Name))
+                    .ToList();
+            }
+
+            testManager.AddScenarios(chosenScenarios, defaultTimeLimit: 180);
 
             testManager.OnAllScenariosCompleted += HandleAllScenariosCompleted;
 
@@ -150,6 +166,35 @@ namespace drivingMod
             {
                 processes[0].Kill();
             }
+        }
+        
+        private List<string> LoadScenarioSelectionFromFile()
+        {
+            var selectedNames = new List<string>();
+            
+            string filePath = Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                "selectedScenarios.txt"
+            );
+            
+            try
+            {
+                var lines = File.ReadAllLines(filePath);
+                foreach (var line in lines)
+                {
+                    var trimmed = line.Trim();
+                    if (string.IsNullOrEmpty(trimmed) || trimmed.StartsWith("#"))
+                        continue;
+
+                    selectedNames.Add(trimmed);
+                }
+            }
+            catch (Exception ex)
+            {
+                GTA.UI.Notification.Show($"Error reading scenario file: {ex.Message}");
+            }
+
+            return selectedNames;
         }
     }
 }
