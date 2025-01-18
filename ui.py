@@ -7,7 +7,7 @@ import sys
 class AutoGuardUI:
     def __init__(self, master):
         self.master = master
-        self.master.title("AutoGuard - Test Environment")
+        self.master.title("AutoGuard - test environment")
 
         self.master.geometry("600x500")
         self.master.resizable(False, False)
@@ -15,15 +15,31 @@ class AutoGuardUI:
         title_label = tk.Label(master, text="AutoGuard UI for GTA V", font=("Helvetica", 16, "bold"))
         title_label.pack(pady=10)
 
-        scenario_frame = tk.LabelFrame(master, text="Test Scenarios", padx=10, pady=10)
-        scenario_frame.pack(fill="x", padx=15, pady=5)
 
-        # tk.Label(scenario_frame, text="Choose a scenario:").pack(side="left")
-        # self.scenarios = ["City Test", "Highway Test", "Mixed Traffic Test"]
-        # self.scenario_var = tk.StringVar(value=self.scenarios[0])
-        
-        scenario_dropdown = ttk.Combobox(scenario_frame, textvariable=self.scenario_var, values=self.scenarios, state="readonly")
-        scenario_dropdown.pack(side="left", padx=5)
+        scenario_frame = tk.LabelFrame(master, text="  Select test scenarios  ", padx=10, pady=10)
+        scenario_frame.pack(fill="both", expand=True, padx=15, pady=5)
+
+        self.scenarios = [
+            "Test1_easy_drive",
+            "Test2_uphill",
+            "Test3_train_crossing",
+            "Test4_highway_speed",
+            "Test5_mountain_road",
+            "Test6_highway_speed_with_barrier",
+            "Test7_easy_with_pedestrians",
+            "Test8_easy_with_random_obstacle"
+        ]
+
+        self.scenario_listbox = tk.Listbox(scenario_frame, selectmode=tk.MULTIPLE, height=8)
+        self.scenario_listbox.pack(side="left", fill="y")
+
+        for scenario in self.scenarios:
+            self.scenario_listbox.insert(tk.END, scenario)
+
+        scrollbar = tk.Scrollbar(scenario_frame, orient="vertical")
+        scrollbar.config(command=self.scenario_listbox.yview)
+        scrollbar.pack(side="right", fill="y")
+        self.scenario_listbox.config(yscrollcommand=scrollbar.set)
 
         button_frame = tk.Frame(master)
         button_frame.pack(pady=10)
@@ -39,14 +55,40 @@ class AutoGuardUI:
 
         exit_frame = tk.Frame(master)
         exit_frame.pack(fill="x", padx=15, pady=5)
+    
+
+    def save_selected_scenarios(self):
+        selected_indices = self.scenario_listbox.curselection()
+        if not selected_indices:
+            messagebox.showinfo("Info", "No scenarios selected.")
+
+        selected_scenarios = [self.scenario_listbox.get(i) for i in selected_indices]
+
+        output_file = "selectedScenarios.txt"
+
+        try:
+            with open(output_file, "w") as f:
+                for scenario in selected_scenarios:
+                    f.write(scenario + "\n")
+
+            self._append_log(f"Selected scenarios saved to '{output_file}':")
+            for s in selected_scenarios:
+                self._append_log(f"  - {s}")
+            
+            messagebox.showinfo("Success", f"Selected scenarios saved to '{output_file}'.")
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to save selected scenarios: {e}")
 
     def launch_gta_v(self):
+        self.save_selected_scenarios()
+
         self._append_log("Launching GTA V...")
         try:
             subprocess.Popen(["python", "env/app.py"])
             self._append_log("GTA V launched (simulation).")
         except Exception as e:
             messagebox.showerror("Error", f"Failed to launch GTA V: {e}")
+
 
     def analyze_results(self):
         documents_path = os.path.join(os.path.expanduser("~"), "Documents")
