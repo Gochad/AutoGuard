@@ -7,7 +7,7 @@ import sys
 class AutoGuardUI:
     def __init__(self, master):
         self.bg_color = "#2e2e2e" 
-        self.fg_color = "#ffffff
+        self.fg_color = "#ffffff"
         self.widget_bg = "#3c3c3c"
 
         self.master = master
