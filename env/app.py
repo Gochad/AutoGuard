@@ -3,6 +3,8 @@ from files import *
 from story_mode import *
 
 if __name__ == "__main__":
+    cleanup_test_csv_files()
+
     current_dir = os.path.dirname(os.path.abspath(__file__))
     mods_folder = os.path.join(current_dir, "mods")
     saves_folder = os.path.join(current_dir, "saves")
