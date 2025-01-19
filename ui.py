@@ -33,7 +33,7 @@ class AutoGuardUI:
             bg=self.bg_color, 
             fg=self.fg_color
         )
-        scenario_frame.pack(fill="both", expand=True, padx=15, pady=5)
+        scenario_frame.pack(fill="both", expand=True, padx=20, pady=5)
 
         self.scenarios = [
             "Test1_easy_drive",
